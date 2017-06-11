@@ -22,10 +22,9 @@ public:
 	bool onConcactBegin(bool isObstacle, std::string color);
 	bool addBall();
 
-	// 警속돛야
 	void addProp(int offsetY);
 
-	void preloadMusic();                   // 渡속潼稜있
+	void preloadMusic();
 
     // implement the "static create()" method manually
     CREATE_FUNC(HelloWorld);
@@ -33,7 +32,6 @@ public:
 private:
 	bool hasStart;
 	Sprite* ball;
-	//鬼헷돨醵똑
 	float velocity;
 	Obstacle* obstacle;
 	Vector<Sprite *> props;
