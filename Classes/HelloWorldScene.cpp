@@ -27,37 +27,25 @@ bool HelloWorld::init()
     }
     
     visibleSize = Director::getInstance()->getVisibleSize();
-    Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
-    /////////////////////////////
-    // 2. add a menu item with "X" image, which is clicked to quit the program
-    //    you may modify it.
+	hasStart = false;
 
-    // add a "close" icon to exit the progress. it's an autorelease object
-    auto closeItem = MenuItemImage::create(
-                                           "CloseNormal.png",
-                                           "CloseSelected.png",
-                                           CC_CALLBACK_1(HelloWorld::menuCloseCallback, this));
-    
-    closeItem->setPosition(Vec2(origin.x + visibleSize.width - closeItem->getContentSize().width/2 ,
-                                origin.y + closeItem->getContentSize().height/2));
+	preloadMusic(); // 预加载音效
 
-    // create menu, it's an autorelease object
-    auto menu = Menu::create(closeItem, NULL);
-    menu->setPosition(Vec2::ZERO);
-    this->addChild(menu, 1);
+	addListener();  // 添加监听器
+	addBall();    // 添加小球
 
 	obstacle = new Obstacle();
 	this->addChild(obstacle, 2);
-
-	auto keyboardListener = EventListenerKeyboard::create();
-	keyboardListener->onKeyPressed = CC_CALLBACK_2(HelloWorld::onKeyPressed, this);
-	_eventDispatcher->addEventListenerWithSceneGraphPriority(keyboardListener, this);
 
 	// update 
 	scheduleUpdate();
 
     return true;
+}
+
+void HelloWorld::preloadMusic()
+{
 }
 
 void HelloWorld::update(float time) {
@@ -68,12 +56,15 @@ void HelloWorld::update(float time) {
 		obstacle->deleteOne();
 		count = 0;
 	}
+	velocity -= GRAVITY;
+	ball->setPositionY(ball->getPositionY() + velocity);
 }
 
-void HelloWorld::menuCloseCallback(Ref* pSender)
+void HelloWorld::addListener()
 {
-    //Close the cocos2d-x game scene and quit the application
-    Director::getInstance()->end();
+	auto keyboardListener = EventListenerKeyboard::create();
+	keyboardListener->onKeyPressed = CC_CALLBACK_2(HelloWorld::onKeyPressed, this);
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(keyboardListener, this);
 }
 
 void HelloWorld::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
@@ -84,4 +75,22 @@ void HelloWorld::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
 		obstacle->addOne(offsetY);
 		offsetY += 100;
 	}
+	else if (code == cocos2d::EventKeyboard::KeyCode::KEY_UP_ARROW) {
+		velocity = 5;
+	}
+}
+//传递颜色和是否是和障碍碰撞
+bool HelloWorld::onConcactBegin(bool isObstacle, std::string color)
+{
+	return false;
+}
+
+bool HelloWorld::addBall()
+{
+	ball = Sprite::create("Ball/Ball3.png");
+	ball->setScale(0.5f);
+	ball->setPosition(Vec2(visibleSize.width / 2, 200));
+	ball->setTag(TAG_BALL);
+	addChild(ball, 1);
+	return true;
 }
