@@ -12,13 +12,13 @@ public:
 
 	virtual void onEnter();
 
-	// 令障碍旋转
+	// rotate  the obstacle
 	void update(); 
 
-	// 添加障碍
+	// add an obstacle
 	void addOne(int offsetY);
 
-	// 删除界面外的障碍
+	// delete the obstacles outside the window
 	void deleteOne();
 };
 

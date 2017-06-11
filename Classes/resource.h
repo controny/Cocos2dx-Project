@@ -11,7 +11,7 @@ static const int TAG_BALL= 1000;
 static const int TAG_OBSTACLE = 1001;
 static const int TAG_PROP = 1002;
 
-// 以下是根据旋转角度判断触碰颜色的参数
+// constants which indicates touched colors
 const int Section = 72;
 const int Half_Section = 36;
 const int Circle = 360;
