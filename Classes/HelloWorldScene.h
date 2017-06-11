@@ -14,7 +14,6 @@ public:
 
     virtual bool init();
    
-
 	void onKeyPressed(EventKeyboard::KeyCode code, Event* event);
 
 	virtual void update(float time);
@@ -22,6 +21,9 @@ public:
 	void addListener();
 	bool onConcactBegin(bool isObstacle, std::string color);
 	bool addBall();
+
+	// 添加道具
+	void addProp(int offsetY);
 
 	void preloadMusic();                   // 预加载音乐
 
@@ -34,6 +36,7 @@ private:
 	//小球的速度
 	float velocity;
 	Obstacle* obstacle;
+	Vector<Sprite *> props;
 	Size visibleSize;
 
 };
