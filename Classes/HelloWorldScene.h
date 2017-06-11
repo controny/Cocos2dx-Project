@@ -14,7 +14,6 @@ public:
 
     virtual bool init();
    
-
 	void onKeyPressed(EventKeyboard::KeyCode code, Event* event);
 
 	virtual void update(float time);
@@ -23,7 +22,10 @@ public:
 	bool onConcactBegin(bool isObstacle, std::string color);
 	bool addBall();
 
-	void preloadMusic();                   // Ô¤¼ÓÔØÒôÀÖ
+	// è­¦ì†ë›ì•¼
+	void addProp(int offsetY);
+
+	void preloadMusic();                   // æ¸¡ì†æ½¼ï¥–ìˆ
 
     // implement the "static create()" method manually
     CREATE_FUNC(HelloWorld);
@@ -31,9 +33,10 @@ public:
 private:
 	bool hasStart;
 	Sprite* ball;
-	//Ğ¡ÇòµÄËÙ¶È
+	//é¬¼í—·ë¨é†µë˜‘
 	float velocity;
 	Obstacle* obstacle;
+	Vector<Sprite *> props;
 	Size visibleSize;
 
 };
