@@ -31,6 +31,7 @@ void Obstacle::addOne(int offsetY)
 
 	// set positon
 	obstacle->setPosition(Vec2(visibleSize.width / 2, offsetY));
+	obstacle->setTag(TAG_OBSTACLE);
 	cocos2d::log("a obstacle added");
 }
 
