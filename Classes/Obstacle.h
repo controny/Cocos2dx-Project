@@ -1,3 +1,6 @@
+#ifndef OBSTACLE
+#define OBSTACLE
+
 #include "cocos2d.h"
 
 using namespace cocos2d;
@@ -7,11 +10,16 @@ class  Obstacle :public Node
 public:
 	Array* obstacleList;
 
-	Obstacle();
 	virtual void onEnter();
+
+	// 令障碍旋转
 	void update(); 
-	void addOne(int offsetX);
-	void checkDel();
-	int addCount;
-	int GAME_STATUS;
+
+	// 添加障碍
+	void addOne(int offsetY);
+
+	// 删除界面外的障碍
+	void deleteOne();
 };
+
+#endif
