@@ -30,14 +30,13 @@ bool HelloWorld::init()
 
 	hasStart = false;
 
-	isMove = false;
-
-	coun = 3;
-
 	preloadMusic(); // 预加载音效
 
 	addListener();  // 添加监听器
 	addBall();    // 添加小球
+
+	coun = 0;
+	isMove = false;
 
 	obstacle = new Obstacle();
 	this->addChild(obstacle, 2);
@@ -57,7 +56,7 @@ void HelloWorld::update(float time) {
 	obstacle->update();
 	count++;
 	auto list = obstacle->obstacleList;
-	
+
 	if (count == 100) {
 		obstacle->deleteOne();
 		count = 0;
@@ -72,13 +71,13 @@ void HelloWorld::update(float time) {
 		else {
 			obstacle->addOne(150);
 		}
-		
+
 		coun = 0;
 	}
 
 	// move the obstacle 
 	auto pos = ball->getPosition();
-	
+
 	if (pos.y > visibleSize.height / 2) {
 		++coun;
 		if (velocity >= 0.000001) obV = velocity;
@@ -87,7 +86,7 @@ void HelloWorld::update(float time) {
 		velocity = 0;
 	}
 	else {
-		
+
 		velocity -= GRAVITY;
 		ball->setPositionY(ball->getPositionY() + velocity);
 	}
@@ -95,7 +94,7 @@ void HelloWorld::update(float time) {
 		obV -= GRAVITY;
 		for (int i = 0; i < list->count(); ++i) {
 			auto s = (Sprite*)list->getObjectAtIndex(i);
-			
+
 			s->setPositionY(s->getPositionY() - obV);
 		}
 		if (obV <= 0.00001) isMove = false;
@@ -105,7 +104,7 @@ void HelloWorld::update(float time) {
 	for (int i = 0; i < list->count(); ++i) {
 		auto obst = ((Sprite*)list->getObjectAtIndex(i))->getBoundingBox();
 		if (body.intersectsRect(obst)) {
-
+			obstacle->getProperty(i);
 		}
 	}
 
@@ -124,7 +123,7 @@ void HelloWorld::addListener()
 }
 
 void HelloWorld::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
-	//log("test");
+	log("test");
 	static int offsetY = 100;
 	if (code == cocos2d::EventKeyboard::KeyCode::KEY_SPACE) {
 		// add an obstacle and a prop
@@ -133,14 +132,11 @@ void HelloWorld::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
 		offsetY += 300;
 	}
 	else if (code == cocos2d::EventKeyboard::KeyCode::KEY_UP_ARROW) {
-		velocity = 8;
+		velocity = 5;
 	}
-}
-//传递颜色和是否是和障碍碰撞
-bool HelloWorld::onConcactBegin(bool isObstacle, std::string color)
-{
-
-	return false;
+	else if (code == cocos2d::EventKeyboard::KeyCode::KEY_UP_ARROW) {
+		velocity = 5;
+	}
 }
 
 bool HelloWorld::addBall()

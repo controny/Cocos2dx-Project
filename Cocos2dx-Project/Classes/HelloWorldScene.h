@@ -19,7 +19,7 @@ public:
 	virtual void update(float time);
 
 	void addListener();
-	bool onConcactBegin(bool isObstacle, std::string color);
+
 	bool addBall();
 
 	void addProp(int offsetY);
@@ -32,12 +32,12 @@ public:
 private:
 	bool hasStart;
 	Sprite* ball;
-	bool isMove;
-	int coun;
-	float obV;
 	float velocity;
 	Obstacle* obstacle;
 	Vector<Sprite *> props;
+	bool isMove;
+	float obV;
+	int coun;
 	Size visibleSize;
 
 };
