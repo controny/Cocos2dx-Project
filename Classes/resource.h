@@ -2,6 +2,8 @@
 #define RESOURCE
 
 //////////////////////////////////////////////////////////////////
+enum Property { Jin, Mu, Shui, Huo, Tu };
+
 static const char IMG_OBSTACLE[] = "obstacle/hollow_circle.png";
 static const char IMG_PROP[] = "prop/prop.png";
 

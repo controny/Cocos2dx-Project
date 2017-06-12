@@ -46,3 +46,8 @@ void Obstacle::deleteOne()
 		cocos2d::log("a obstacle removed");
 	}
 }
+
+Property Obstacle::getProperty(int index)
+{
+	return Property();
+}
