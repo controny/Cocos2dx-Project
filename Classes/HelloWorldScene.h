@@ -19,7 +19,8 @@ public:
 	virtual void update(float time);
 
 	void addListener();
-
+	void gameOver();
+	void onBallCrashProps();
 	bool addBall();
 
 	void addProp(int offsetY);

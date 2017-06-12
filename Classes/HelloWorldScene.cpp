@@ -84,6 +84,30 @@ void HelloWorld::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
 	}
 }
 
+/*
+* When ball clash obstacle and the color is error 
+* Or ball drop under the game scene
+*/
+void HelloWorld::gameOver() {
+	
+}
+/*
+* Please elminate the Props before call this function
+* Ball will change its color in this function
+*/
+void HelloWorld::onBallCrashProps() {
+	score++;
+	std::string s = "score : " + std::to_string(score);
+	scoreLabel->setString(s);
+	int before = ball->getTag();
+	int r;
+	do {
+		r = random(0, 5) % 5;
+	} while (TAG_BALL[r] == before);
+	ball->setTexture(IMG_BALL[r]);
+	ball->setTag(TAG_BALL[r]);
+}
+
 bool HelloWorld::addBall()
 {
 	ball = Sprite::create("Ball/Ball3.png");
