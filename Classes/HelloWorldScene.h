@@ -19,7 +19,7 @@ public:
 	virtual void update(float time);
 
 	void addListener();
-	bool onConcactBegin(bool isObstacle, std::string color);
+
 	bool addBall();
 
 	void addProp(int offsetY);

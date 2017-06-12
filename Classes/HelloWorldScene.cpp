@@ -83,26 +83,6 @@ void HelloWorld::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
 		velocity = 5;
 	}
 }
-//传递颜色和是否是和障碍碰撞
-bool HelloWorld::onConcactBegin(bool isObstacle, std::string color)
-{
-	return false;
-}
-
-bool HelloWorld::addBall()
-{
-	ball = Sprite::create("Ball/Ball3.png");
-	ball->setScale(0.5f);
-	ball->setPosition(Vec2(visibleSize.width / 2, 200));
-	ball->setTag(TAG_BALL);
-	addChild(ball, 1);
-	return true;
-}
-//传递颜色和是否是和障碍碰撞
-bool HelloWorld::onConcactBegin(bool isObstacle, std::string color)
-{
-	return false;
-}
 
 bool HelloWorld::addBall()
 {
