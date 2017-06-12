@@ -83,7 +83,6 @@ void HelloWorld::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
 		velocity = 5;
 	}
 }
-
 /*
 * When ball clash obstacle and the color is error 
 * Or ball drop under the game scene
