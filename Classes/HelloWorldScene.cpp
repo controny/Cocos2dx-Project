@@ -38,6 +38,10 @@ bool HelloWorld::init()
 	obstacle = new Obstacle();
 	this->addChild(obstacle, 2);
 
+	score = 0;
+	scoreLabel = Label::createWithTTF("score : 0", "fonts/arial.TTF",30);
+	scoreLabel->setPosition(Vec2(80, visibleSize.height - 30));
+	addChild(scoreLabel, 0);
 	// update 
 	scheduleUpdate();
 
@@ -79,18 +83,36 @@ void HelloWorld::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
 		velocity = 5;
 	}
 }
-//传递颜色和是否是和障碍碰撞
-bool HelloWorld::onConcactBegin(bool isObstacle, std::string color)
-{
-	return false;
+/*
+* When ball clash obstacle and the color is error 
+* Or ball drop under the game scene
+*/
+void HelloWorld::gameOver() {
+	
+}
+/*
+* Please elminate the Props before call this function
+* Ball will change its color in this function
+*/
+void HelloWorld::onBallCrashProps() {
+	score++;
+	std::string s = "score : " + std::to_string(score);
+	scoreLabel->setString(s);
+	int before = ball->getTag();
+	int r;
+	do {
+		r = random(0, 5) % 5;
+	} while (TAG_BALL[r] == before);
+	ball->setTexture(IMG_BALL[r]);
+	ball->setTag(TAG_BALL[r]);
 }
 
 bool HelloWorld::addBall()
 {
-	ball = Sprite::create("Ball/Ball3.png");
+	ball = Sprite::create(IMG_BALL[0]);
 	ball->setScale(0.5f);
 	ball->setPosition(Vec2(visibleSize.width / 2, 200));
-	ball->setTag(TAG_BALL);
+	ball->setTag(TAG_BALL[0]);
 	addChild(ball, 1);
 	return true;
 }

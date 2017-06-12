@@ -19,7 +19,8 @@ public:
 	virtual void update(float time);
 
 	void addListener();
-	bool onConcactBegin(bool isObstacle, std::string color);
+	void gameOver();
+	void onBallCrashProps();
 	bool addBall();
 
 	void addProp(int offsetY);
@@ -36,6 +37,8 @@ private:
 	Obstacle* obstacle;
 	Vector<Sprite *> props;
 	Size visibleSize;
+	int score;
+	Label* scoreLabel;
 
 };
 
