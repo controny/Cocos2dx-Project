@@ -73,11 +73,15 @@ void HelloWorld::addListener()
 
 void HelloWorld::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
 	log("test");
-	static int offsetY = 40;
+	static int offsetY = 100;
 	if (code == cocos2d::EventKeyboard::KeyCode::KEY_SPACE) {
-		// create obstacle
+		// add an obstacle and a prop
 		obstacle->addOne(offsetY);
-		offsetY += 100;
+		addProp(offsetY - 150);
+		offsetY += 300;
+	}
+	else if (code == cocos2d::EventKeyboard::KeyCode::KEY_UP_ARROW) {
+		velocity = 5;
 	}
 	else if (code == cocos2d::EventKeyboard::KeyCode::KEY_UP_ARROW) {
 		velocity = 5;
@@ -115,4 +119,13 @@ bool HelloWorld::addBall()
 	ball->setTag(TAG_BALL[0]);
 	addChild(ball, 1);
 	return true;
+}
+
+void HelloWorld::addProp(int offsetY)
+{
+	auto prop = Sprite::create(IMG_PROP);
+	prop->setScale(0.1);
+	prop->setPosition(Vec2(visibleSize.width / 2, offsetY));
+	prop->setTag(TAG_PROP);
+	addChild(prop, 1);
 }

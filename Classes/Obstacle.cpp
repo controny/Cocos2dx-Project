@@ -31,6 +31,7 @@ void Obstacle::addOne(int offsetY)
 
 	// set positon
 	obstacle->setPosition(Vec2(visibleSize.width / 2, offsetY));
+	obstacle->setTag(TAG_OBSTACLE);
 	cocos2d::log("a obstacle added");
 }
 
@@ -44,4 +45,34 @@ void Obstacle::deleteOne()
 		this->removeChild(s);
 		cocos2d::log("a obstacle removed");
 	}
+}
+
+Property Obstacle::getProperty(int index)
+{
+	static const int Section = 72;
+	static const int Half_Section = 36;
+	static const int Circle = 360;
+	static const int CIRCLE_SHUI_MIN = Half_Section;
+	static const int CIRCLE_SHUI_MAX = Circle - Half_Section;
+	static const int CIRCLE_MU_MIN = Half_Section;
+	static const int CIRCLE_MU_MAX = CIRCLE_MU_MIN + Section;
+	static const int CIRCLE_JIN_MIN = Half_Section + Section;
+	static const int CIRCLE_JIN_MAX = CIRCLE_JIN_MIN + Section;
+	static const int CIRCLE_HUO_MIN = Half_Section + Section * 2;
+	static const int CIRCLE_HUO_MAX = CIRCLE_HUO_MIN + Section;
+	static const int CIRCLE_TU_MIN = Half_Section + Section * 3;
+	static const int CIRCLE_TU_MAX = CIRCLE_TU_MIN + Section;
+
+	auto obstacle = (Sprite *)obstacleList->getObjectAtIndex(index);
+	auto rotation = (int)(obstacle->getRotation()) % Circle;
+	if ((rotation >= 0 && rotation < CIRCLE_SHUI_MIN) || rotation >= CIRCLE_SHUI_MAX)
+		return Shui;
+	else if (rotation >= CIRCLE_MU_MIN && rotation < CIRCLE_MU_MAX)
+		return Mu;
+	else if (rotation >= CIRCLE_JIN_MIN && rotation < CIRCLE_JIN_MAX)
+		return Jin;
+	else if (rotation >= CIRCLE_HUO_MIN && rotation < CIRCLE_HUO_MAX)
+		return Huo;
+	else if (rotation >= CIRCLE_TU_MIN && rotation < CIRCLE_TU_MAX)
+		return Tu;
 }
