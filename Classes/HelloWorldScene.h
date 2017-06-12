@@ -37,6 +37,8 @@ private:
 	Obstacle* obstacle;
 	Vector<Sprite *> props;
 	Size visibleSize;
+	int score;
+	Label* scoreLabel;
 
 };
 

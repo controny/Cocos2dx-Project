@@ -38,6 +38,10 @@ bool HelloWorld::init()
 	obstacle = new Obstacle();
 	this->addChild(obstacle, 2);
 
+	score = 0;
+	scoreLabel = Label::createWithTTF("score : 0", "fonts/arial.TTF",30);
+	scoreLabel->setPosition(Vec2(80, visibleSize.height - 30));
+	addChild(scoreLabel, 0);
 	// update 
 	scheduleUpdate();
 
@@ -109,10 +113,10 @@ void HelloWorld::onBallCrashProps() {
 
 bool HelloWorld::addBall()
 {
-	ball = Sprite::create("Ball/Ball3.png");
+	ball = Sprite::create(IMG_BALL[0]);
 	ball->setScale(0.5f);
 	ball->setPosition(Vec2(visibleSize.width / 2, 200));
-	ball->setTag(TAG_BALL);
+	ball->setTag(TAG_BALL[0]);
 	addChild(ball, 1);
 	return true;
 }
