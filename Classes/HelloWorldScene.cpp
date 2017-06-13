@@ -131,6 +131,9 @@ void HelloWorld::update(float time) {
 		auto rect = props.at(i)->getBoundingBox();
 		if (body.intersectsRect(rect)) {
 			onBallCrashProps();
+			removeChild(props.at(i));
+			props.erase(i);
+			break;
 		}
 	}
 
