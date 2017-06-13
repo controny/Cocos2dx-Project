@@ -38,6 +38,9 @@ private:
 	Vector<Sprite *> props;
 	Size visibleSize;
 	int score;
+	bool isMove;
+	float obV;
+	int coun;
 	Label* scoreLabel;
 
 };
