@@ -70,13 +70,13 @@ void HelloWorld::update(float time) {
 	if (coun == 5) {
 		if (list->count() - 1 >= 0 && props.size() - 1 >= 0) {
 			auto lastone = (Sprite*)list->getObjectAtIndex(list->count() - 1);
-			obstacle->addOne(lastone->getPositionY() + 250);
+			obstacle->addOne(lastone->getPositionY() + 275);
 			auto last = props.back();
-			int dy = last->getPositionY() + 250;
+			int dy = last->getPositionY() + 275;
 			addProp(dy);
 		}
 		else {
-			addProp(170);
+			addProp(275);
 			obstacle->addOne(150);
 		}
 
@@ -158,10 +158,10 @@ void HelloWorld::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
 		offsetY += 300;
 	}
 	else if (code == cocos2d::EventKeyboard::KeyCode::KEY_UP_ARROW) {
-		velocity = 5;
+		velocity = 7;
 	}
 	else if (code == cocos2d::EventKeyboard::KeyCode::KEY_UP_ARROW) {
-		velocity = 5;
+		velocity = 7;
 	}
 }
 /*
@@ -191,7 +191,7 @@ void HelloWorld::onBallCrashProps() {
 bool HelloWorld::addBall()
 {
 	ball = Sprite::create(IMG_BALL[0]);
-	ball->setScale(0.5f);
+	ball->setScale(0.3f);
 	ball->setPosition(Vec2(visibleSize.width / 2, 200));
 	ball->setTag(TAG_BALL[0]);
 	addChild(ball, 1);
