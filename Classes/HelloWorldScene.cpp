@@ -68,11 +68,15 @@ void HelloWorld::update(float time) {
 	}
 	// add a new obstacle
 	if (coun == 5) {
-		if (list->count() - 1 >= 0) {
+		if (list->count() - 1 >= 0 && props.size() - 1 >= 0) {
 			auto lastone = (Sprite*)list->getObjectAtIndex(list->count() - 1);
 			obstacle->addOne(lastone->getPositionY() + 250);
+			auto last = props.back();
+			int dy = last->getPositionY() + 250;
+			addProp(dy);
 		}
 		else {
+			addProp(170);
 			obstacle->addOne(150);
 		}
 
@@ -96,6 +100,10 @@ void HelloWorld::update(float time) {
 	}
 	if (isMove) {
 		obV -= GRAVITY;
+		for (int i = 0; i < props.size(); ++i) {
+			auto p = props.at(i);
+			p->setPositionY(p->getPositionY() - obV);
+		}
 		for (int i = 0; i < list->count(); ++i) {
 			auto s = (Sprite*)list->getObjectAtIndex(i);
 
@@ -103,13 +111,26 @@ void HelloWorld::update(float time) {
 		}
 		if (obV <= 0.00001) isMove = false;
 	}
-	// judge whether there is a collission
+	// judge whether there is a collission with obstacles
 	auto body = ball->getBoundingBox();
 	for (int i = 0; i < list->count(); ++i) {
 		auto obst = ((Sprite*)list->getObjectAtIndex(i))->getBoundingBox();
 		if (body.intersectsRect(obst)) {
 			auto color = obstacle->getProperty(i);
-			
+			if (ball->getTag() - 2001 == color || (ball->getTag() - 2001 + 2) % 5 == color) {
+
+			}
+			else {
+				gameOver();
+			}
+		}
+	}
+
+	// judge whether there is a collision with props
+	for (int i = 0; i < props.size(); ++i) {
+		auto rect = props.at(i)->getBoundingBox();
+		if (body.intersectsRect(rect)) {
+			onBallCrashProps();
 		}
 	}
 
@@ -183,5 +204,6 @@ void HelloWorld::addProp(int offsetY)
 	prop->setScale(0.1);
 	prop->setPosition(Vec2(visibleSize.width / 2, offsetY));
 	prop->setTag(TAG_PROP);
+	props.pushBack(prop);
 	addChild(prop, 1);
 }
