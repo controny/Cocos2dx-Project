@@ -35,13 +35,12 @@ bool HelloWorld::init()
 	addListener();  // Ìí¼Ó¼àÌýÆ÷
 	addBall();    // Ìí¼ÓÐ¡Çò
 
+	coun = 0;
+	isMove = false;
+
 	obstacle = new Obstacle();
 	this->addChild(obstacle, 2);
 
-	score = 0;
-	scoreLabel = Label::createWithTTF("score : 0", "fonts/arial.TTF",30);
-	scoreLabel->setPosition(Vec2(80, visibleSize.height - 30));
-	addChild(scoreLabel, 0);
 	// update 
 	scheduleUpdate();
 
@@ -56,12 +55,64 @@ void HelloWorld::update(float time) {
 	static int count = 0;
 	obstacle->update();
 	count++;
+	auto list = obstacle->obstacleList;
+
 	if (count == 100) {
 		obstacle->deleteOne();
 		count = 0;
 	}
-	velocity -= GRAVITY;
-	ball->setPositionY(ball->getPositionY() + velocity);
+
+	// add a new obstacle
+	if (coun == 5) {
+		if (list->count() - 1 >= 0) {
+			auto lastone = (Sprite*)list->getObjectAtIndex(list->count() - 1);
+			obstacle->addOne(lastone->getPositionY() + 250);
+		}
+		else {
+			obstacle->addOne(150);
+		}
+
+		coun = 0;
+	}
+
+	// move the obstacle 
+	auto pos = ball->getPosition();
+
+	if (pos.y > visibleSize.height / 2) {
+		++coun;
+		if (velocity >= 0.000001) obV = velocity;
+		ball->setPosition(ball->getPosition() + Vec2(0, -2));
+		isMove = true;
+		velocity = 0;
+	}
+	else {
+
+		velocity -= GRAVITY;
+		ball->setPositionY(ball->getPositionY() + velocity);
+	}
+	if (isMove) {
+		obV -= GRAVITY;
+		for (int i = 0; i < list->count(); ++i) {
+			auto s = (Sprite*)list->getObjectAtIndex(i);
+
+			s->setPositionY(s->getPositionY() - obV);
+		}
+		if (obV <= 0.00001) isMove = false;
+	}
+	// judge whether there is a collission
+	auto body = ball->getBoundingBox();
+	for (int i = 0; i < list->count(); ++i) {
+		auto obst = ((Sprite*)list->getObjectAtIndex(i))->getBoundingBox();
+		if (body.intersectsRect(obst)) {
+			obstacle->getProperty(i);
+		}
+	}
+
+
+	// gameover if the ball is out of the screen
+	if (ball->getPositionY() < 0.00001) {
+
+	}
 }
 
 void HelloWorld::addListener()
@@ -87,36 +138,13 @@ void HelloWorld::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
 		velocity = 5;
 	}
 }
-/*
-* When ball clash obstacle and the color is error 
-* Or ball drop under the game scene
-*/
-void HelloWorld::gameOver() {
-	
-}
-/*
-* Please elminate the Props before call this function
-* Ball will change its color in this function
-*/
-void HelloWorld::onBallCrashProps() {
-	score++;
-	std::string s = "score : " + std::to_string(score);
-	scoreLabel->setString(s);
-	int before = ball->getTag();
-	int r;
-	do {
-		r = random(0, 5) % 5;
-	} while (TAG_BALL[r] == before);
-	ball->setTexture(IMG_BALL[r]);
-	ball->setTag(TAG_BALL[r]);
-}
 
 bool HelloWorld::addBall()
 {
-	ball = Sprite::create(IMG_BALL[0]);
+	ball = Sprite::create("Ball/Ball3.png");
 	ball->setScale(0.5f);
 	ball->setPosition(Vec2(visibleSize.width / 2, 200));
-	ball->setTag(TAG_BALL[0]);
+	ball->setTag(TAG_BALL);
 	addChild(ball, 1);
 	return true;
 }
