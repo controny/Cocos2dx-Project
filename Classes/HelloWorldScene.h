@@ -19,7 +19,8 @@ public:
 	virtual void update(float time);
 
 	void addListener();
-
+	void gameOver();
+	void onBallCrashProps();
 	bool addBall();
 
 	void addProp(int offsetY);
@@ -35,10 +36,9 @@ private:
 	float velocity;
 	Obstacle* obstacle;
 	Vector<Sprite *> props;
-	bool isMove;
-	float obV;
-	int coun;
 	Size visibleSize;
+	int score;
+	Label* scoreLabel;
 
 };
 
