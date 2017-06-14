@@ -34,7 +34,23 @@ public:
 	 * @param  index the index of the obstacle in the array
 	 * @return       a constant in enumeration Property
 	 */
-	Property getProperty(int index);
+	Property getBottomProperty(int index);
+
+	/**
+	 * Get the top property of an obstacle specified by index
+	 * @param  index the index of the obstacle in the array
+	 * @return       a constant in enumeration Property
+	 */
+	Property getTopProperty(int index);
+
+private:
+
+	/**
+	 * Get the responding property based on rotation
+	 * @param  rotation the rotation of an obstacle
+	 * @return       a constant in enumeration Property   
+	 */
+	Property getPropertyByRotation(int rotation);
 };
 
 #endif

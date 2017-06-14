@@ -123,12 +123,11 @@ void HelloWorld::update(float time) {
 		auto dis = fabs(obst->getPositionY() - ball->getPositionY());
 		auto disInnerToObst = dis + ball->getContentSize().height * 0.3 * 0.5;
 		auto disOutToObst = dis - ball->getContentSize().height * 0.3 * 0.5;
-		auto color = obstacle->getProperty(i);
+		auto color = obstacle->getBottomProperty(i);
 		if (dis > r / 2 - 20) {
 			if (disOutToObst < r / 2 - 150) {
 				if (ball->getTag() - 2001 == color || (ball->getTag() - 2001 + 2) % 5 == color) {
-					//log("safe");
-					gameOver();
+					log("safe");
 				}
 				else {
 					gameOver();
@@ -140,8 +139,7 @@ void HelloWorld::update(float time) {
 		else {
 			if (disInnerToObst > r / 2 - dangerDis - 30) {
 				if (ball->getTag() - 2001 == color || (ball->getTag() - 2001 + 2) % 5 == color) {
-					//log("safe");
-					gameOver();
+					log("safe");
 				}
 				else {
 					gameOver();
@@ -156,6 +154,9 @@ void HelloWorld::update(float time) {
 		auto rect = props.at(i)->getBoundingBox();
 		if (body.intersectsRect(rect)) {
 			onBallCrashProps();
+			removeChild(props.at(i));
+			props.erase(i);
+			break;
 		}
 	}
 
@@ -180,9 +181,6 @@ void HelloWorld::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
 		obstacle->addOne(offsetY);
 		addProp(offsetY - 150);
 		offsetY += 300;
-	}
-	else if (code == cocos2d::EventKeyboard::KeyCode::KEY_UP_ARROW) {
-		velocity = 6;
 	}
 	else if (code == cocos2d::EventKeyboard::KeyCode::KEY_UP_ARROW) {
 		velocity = 6;

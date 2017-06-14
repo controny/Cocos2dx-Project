@@ -47,7 +47,22 @@ void Obstacle::deleteOne()
 	}
 }
 
-Property Obstacle::getProperty(int index)
+Property Obstacle::getBottomProperty(int index)
+{
+	auto obstacle = (Sprite *)obstacleList->getObjectAtIndex(index);
+	auto rotation = (int)(obstacle->getRotation()) % 360;
+	return getPropertyByRotation(rotation);
+}
+
+Property Obstacle::getTopProperty(int index)
+{
+	auto obstacle = (Sprite *)obstacleList->getObjectAtIndex(index);
+	// Suppose that the obstacle ratates another half circle
+	auto rotation = (int)(obstacle->getRotation() + 180) % 360;
+	return getPropertyByRotation(rotation);
+}
+
+Property Obstacle::getPropertyByRotation(int rotation)
 {
 	static const int Section = 72;
 	static const int Half_Section = 36;
@@ -63,8 +78,6 @@ Property Obstacle::getProperty(int index)
 	static const int CIRCLE_TU_MIN = Half_Section + Section * 3;
 	static const int CIRCLE_TU_MAX = CIRCLE_TU_MIN + Section;
 
-	auto obstacle = (Sprite *)obstacleList->getObjectAtIndex(index);
-	auto rotation = (int)(obstacle->getRotation()) % Circle;
 	if ((rotation >= 0 && rotation < CIRCLE_SHUI_MIN) || rotation >= CIRCLE_SHUI_MAX)
 		return Shui;
 	else if (rotation >= CIRCLE_MU_MIN && rotation < CIRCLE_MU_MAX)
