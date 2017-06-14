@@ -30,6 +30,9 @@ bool HelloWorld::init()
 
 	hasStart = false;
 
+	coun = 0;
+	isMove = false;
+
 	preloadMusic(); // Ô¤¼ÓÔØÒôÐ§
 
 	addListener();  // Ìí¼Ó¼àÌýÆ÷
@@ -56,12 +59,89 @@ void HelloWorld::update(float time) {
 	static int count = 0;
 	obstacle->update();
 	count++;
+
+	auto list = obstacle->obstacleList;
+
 	if (count == 100) {
 		obstacle->deleteOne();
 		count = 0;
 	}
-	velocity -= GRAVITY;
-	ball->setPositionY(ball->getPositionY() + velocity);
+	// add a new obstacle
+	if (coun == 5) {
+		if (list->count() - 1 >= 0 && props.size() - 1 >= 0) {
+			auto lastone = (Sprite*)list->getObjectAtIndex(list->count() - 1);
+			obstacle->addOne(lastone->getPositionY() + 275);
+			auto last = props.back();
+			int dy = last->getPositionY() + 275;
+			addProp(dy);
+		}
+		else {
+			addProp(275);
+			obstacle->addOne(150);
+		}
+
+		coun = 0;
+	}
+
+	// move the obstacle 
+	auto pos = ball->getPosition();
+
+	if (pos.y > visibleSize.height / 2) {
+		++coun;
+		if (velocity >= 0.000001) obV = velocity;
+		ball->setPosition(ball->getPosition() + Vec2(0, -2));
+		isMove = true;
+		velocity = 0;
+	}
+	else {
+
+		velocity -= GRAVITY;
+		ball->setPositionY(ball->getPositionY() + velocity);
+	}
+	if (isMove) {
+		obV -= GRAVITY;
+		for (int i = 0; i < props.size(); ++i) {
+			auto p = props.at(i);
+			p->setPositionY(p->getPositionY() - obV);
+		}
+		for (int i = 0; i < list->count(); ++i) {
+			auto s = (Sprite*)list->getObjectAtIndex(i);
+
+			s->setPositionY(s->getPositionY() - obV);
+		}
+		if (obV <= 0.00001) isMove = false;
+	}
+	// judge whether there is a collission with obstacles
+	auto body = ball->getBoundingBox();
+	for (int i = 0; i < list->count(); ++i) {
+		auto obst = ((Sprite*)list->getObjectAtIndex(i))->getBoundingBox();
+		if (body.intersectsRect(obst)) {
+			auto color = obstacle->getProperty(i);
+			if (ball->getTag() - 2001 == color || (ball->getTag() - 2001 + 2) % 5 == color) {
+
+			}
+			else {
+				gameOver();
+			}
+		}
+	}
+
+	// judge whether there is a collision with props
+	for (int i = 0; i < props.size(); ++i) {
+		auto rect = props.at(i)->getBoundingBox();
+		if (body.intersectsRect(rect)) {
+			onBallCrashProps();
+			removeChild(props.at(i));
+			props.erase(i);
+			break;
+		}
+	}
+
+
+	// gameover if the ball is out of the screen
+	if (ball->getPositionY() < 0.00001) {
+		gameOver();
+	}
 }
 
 void HelloWorld::addListener()
@@ -81,10 +161,10 @@ void HelloWorld::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
 		offsetY += 300;
 	}
 	else if (code == cocos2d::EventKeyboard::KeyCode::KEY_UP_ARROW) {
-		velocity = 5;
+		velocity = 7;
 	}
 	else if (code == cocos2d::EventKeyboard::KeyCode::KEY_UP_ARROW) {
-		velocity = 5;
+		velocity = 7;
 	}
 }
 /*
@@ -114,7 +194,7 @@ void HelloWorld::onBallCrashProps() {
 bool HelloWorld::addBall()
 {
 	ball = Sprite::create(IMG_BALL[0]);
-	ball->setScale(0.5f);
+	ball->setScale(0.3f);
 	ball->setPosition(Vec2(visibleSize.width / 2, 200));
 	ball->setTag(TAG_BALL[0]);
 	addChild(ball, 1);
@@ -127,5 +207,6 @@ void HelloWorld::addProp(int offsetY)
 	prop->setScale(0.1);
 	prop->setPosition(Vec2(visibleSize.width / 2, offsetY));
 	prop->setTag(TAG_PROP);
+	props.pushBack(prop);
 	addChild(prop, 1);
 }
