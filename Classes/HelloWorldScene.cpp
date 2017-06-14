@@ -48,6 +48,9 @@ bool HelloWorld::init()
 	// update 
 	scheduleUpdate();
 
+	//obstacle->addOne(300);
+	addProp(425);
+
     return true;
 }
 
@@ -114,14 +117,36 @@ void HelloWorld::update(float time) {
 	// judge whether there is a collission with obstacles
 	auto body = ball->getBoundingBox();
 	for (int i = 0; i < list->count(); ++i) {
-		auto obst = ((Sprite*)list->getObjectAtIndex(i))->getBoundingBox();
-		if (body.intersectsRect(obst)) {
-			auto color = obstacle->getProperty(i);
-			if (ball->getTag() - 2001 == color || (ball->getTag() - 2001 + 2) % 5 == color) {
-
+		auto obst = ((Sprite*)list->getObjectAtIndex(i));
+		auto r = obst->getContentSize().height * 0.5;
+		auto dangerDis = r * 5 / 39;
+		auto dis = fabs(obst->getPositionY() - ball->getPositionY());
+		auto disInnerToObst = dis + ball->getContentSize().height * 0.3 * 0.5;
+		auto disOutToObst = dis - ball->getContentSize().height * 0.3 * 0.5;
+		auto color = obstacle->getProperty(i);
+		if (dis > r / 2 - 20) {
+			if (disOutToObst < r / 2 - 150) {
+				if (ball->getTag() - 2001 == color || (ball->getTag() - 2001 + 2) % 5 == color) {
+					//log("safe");
+					gameOver();
+				}
+				else {
+					gameOver();
+					break;
+				}
 			}
-			else {
-				gameOver();
+			
+		}
+		else {
+			if (disInnerToObst > r / 2 - dangerDis - 30) {
+				if (ball->getTag() - 2001 == color || (ball->getTag() - 2001 + 2) % 5 == color) {
+					//log("safe");
+					gameOver();
+				}
+				else {
+					gameOver();
+					break;
+				}
 			}
 		}
 	}
@@ -152,7 +177,6 @@ void HelloWorld::addListener()
 }
 
 void HelloWorld::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
-	log("test");
 	static int offsetY = 100;
 	if (code == cocos2d::EventKeyboard::KeyCode::KEY_SPACE) {
 		// add an obstacle and a prop
@@ -161,10 +185,10 @@ void HelloWorld::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
 		offsetY += 300;
 	}
 	else if (code == cocos2d::EventKeyboard::KeyCode::KEY_UP_ARROW) {
-		velocity = 7;
+		velocity = 6;
 	}
 	else if (code == cocos2d::EventKeyboard::KeyCode::KEY_UP_ARROW) {
-		velocity = 7;
+		velocity = 6;
 	}
 }
 /*
@@ -172,7 +196,8 @@ void HelloWorld::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
 * Or ball drop under the game scene
 */
 void HelloWorld::gameOver() {
-	
+	log("fail");
+	onBallCrashProps();
 }
 /*
 * Please elminate the Props before call this function
