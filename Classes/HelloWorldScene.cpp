@@ -123,27 +123,54 @@ void HelloWorld::update(float time) {
 		auto dis = fabs(obst->getPositionY() - ball->getPositionY());
 		auto disInnerToObst = dis + ball->getContentSize().height * 0.3 * 0.5;
 		auto disOutToObst = dis - ball->getContentSize().height * 0.3 * 0.5;
-		auto color = obstacle->getBottomProperty(i);
+		
 		if (dis > r / 2 - 20) {
 			if (disOutToObst < r / 2 - 150) {
-				if (ball->getTag() - 2001 == color || (ball->getTag() - 2001 + 2) % 5 == color) {
-					log("safe");
+				if (ball->getPosition() > obst->getPosition()) {
+					auto color = obstacle->getTopProperty(i);
+					if (ball->getTag() - 2001 == color || (ball->getTag() - 2001 + 2) % 5 == color) {
+						log("safe");
+					}
+					else {
+						gameOver();
+						break;
+					}
 				}
 				else {
-					gameOver();
-					break;
+					auto color = obstacle->getBottomProperty(i);
+					if (ball->getTag() - 2001 == color || (ball->getTag() - 2001 + 2) % 5 == color) {
+						log("safe");
+					}
+					else {
+						gameOver();
+						break;
+					}
 				}
+				
 			}
 			
 		}
 		else {
 			if (disInnerToObst > r / 2 - dangerDis - 30) {
-				if (ball->getTag() - 2001 == color || (ball->getTag() - 2001 + 2) % 5 == color) {
-					log("safe");
+				if (ball->getPosition() > obst->getPosition()) {
+					auto color = obstacle->getTopProperty(i);
+					if (ball->getTag() - 2001 == color || (ball->getTag() - 2001 + 2) % 5 == color) {
+						log("safe");
+					}
+					else {
+						gameOver();
+						break;
+					}
 				}
 				else {
-					gameOver();
-					break;
+					auto color = obstacle->getBottomProperty(i);
+					if (ball->getTag() - 2001 == color || (ball->getTag() - 2001 + 2) % 5 == color) {
+						log("safe");
+					}
+					else {
+						gameOver();
+						break;
+					}
 				}
 			}
 		}
