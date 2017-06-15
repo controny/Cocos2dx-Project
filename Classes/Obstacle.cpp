@@ -1,9 +1,8 @@
 #include "Obstacle.h"
 #include "resource.h"
 
-void Obstacle::onEnter()
+Obstacle::Obstacle()
 {
-	Node::onEnter();
 	obstacleList = Array::create();
 	obstacleList->retain();
 }
