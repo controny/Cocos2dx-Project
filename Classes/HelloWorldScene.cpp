@@ -70,7 +70,7 @@ void HelloWorld::update(float time) {
 		count = 0;
 	}
 	// add a new obstacle
-	/*if (coun == 5) {
+	if (coun == 5) {
 		if (list->count() - 1 >= 0 && props.size() - 1 >= 0) {
 			auto lastone = (Sprite*)list->getObjectAtIndex(list->count() - 1);
 			obstacle->addOne(lastone->getPositionY() + 275);
@@ -84,7 +84,7 @@ void HelloWorld::update(float time) {
 		}
 
 		coun = 0;
-	}*/
+	}
 
 	// move the obstacle 
 	auto pos = ball->getPosition();

@@ -63,28 +63,18 @@ Property Obstacle::getTopProperty(int index)
 
 Property Obstacle::getPropertyByRotation(int rotation)
 {
-	static const int Section = 72;
-	static const int Half_Section = 36;
-	static const int Circle = 360;
-	static const int CIRCLE_SHUI_MIN = Half_Section;
-	static const int CIRCLE_SHUI_MAX = Circle - Half_Section;
-	static const int CIRCLE_MU_MIN = Half_Section;
-	static const int CIRCLE_MU_MAX = CIRCLE_MU_MIN + Section;
-	static const int CIRCLE_JIN_MIN = Half_Section + Section;
-	static const int CIRCLE_JIN_MAX = CIRCLE_JIN_MIN + Section;
-	static const int CIRCLE_HUO_MIN = Half_Section + Section * 2;
-	static const int CIRCLE_HUO_MAX = CIRCLE_HUO_MIN + Section;
-	static const int CIRCLE_TU_MIN = Half_Section + Section * 3;
-	static const int CIRCLE_TU_MAX = CIRCLE_TU_MIN + Section;
-
+	Property ret;
 	if ((rotation >= 0 && rotation < CIRCLE_SHUI_MIN) || rotation >= CIRCLE_SHUI_MAX)
-		return Shui;
+		ret =  Shui;
 	else if (rotation >= CIRCLE_MU_MIN && rotation < CIRCLE_MU_MAX)
-		return Mu;
+		ret =  Mu;
 	else if (rotation >= CIRCLE_JIN_MIN && rotation < CIRCLE_JIN_MAX)
-		return Jin;
+		ret =  Jin;
 	else if (rotation >= CIRCLE_HUO_MIN && rotation < CIRCLE_HUO_MAX)
-		return Huo;
+		ret =  Huo;
 	else if (rotation >= CIRCLE_TU_MIN && rotation < CIRCLE_TU_MAX)
-		return Tu;
+		ret =  Tu;
+	log("color: %d", ret);
+
+	return ret;
 }
