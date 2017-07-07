@@ -49,7 +49,10 @@ bool HelloWorld::init()
 	scheduleUpdate();
 
 	obstacle->addOne(300);
-	addProp(425);
+	addProp(475);
+
+	obstacle->addOne(675);
+	addProp(850);
 
     return true;
 }
@@ -73,14 +76,10 @@ void HelloWorld::update(float time) {
 	if (coun == 5) {
 		if (list->count() - 1 >= 0 && props.size() - 1 >= 0) {
 			auto lastone = (Sprite*)list->getObjectAtIndex(list->count() - 1);
-			obstacle->addOne(lastone->getPositionY() + 275);
+			obstacle->addOne(lastone->getPositionY() + 375);
 			auto last = props.back();
-			int dy = last->getPositionY() + 275;
+			int dy = last->getPositionY() + 375;
 			addProp(dy);
-		}
-		else {
-			addProp(275);
-			obstacle->addOne(150);
 		}
 
 		coun = 0;
@@ -253,7 +252,7 @@ bool HelloWorld::addBall()
 {
 	ball = Sprite::create(IMG_BALL[0]);
 	ball->setScale(0.3f);
-	ball->setPosition(Vec2(visibleSize.width / 2, 200));
+	ball->setPosition(Vec2(visibleSize.width / 2, 50));
 	ball->setTag(TAG_BALL[0]);
 	addChild(ball, 1);
 	return true;
