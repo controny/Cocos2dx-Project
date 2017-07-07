@@ -29,7 +29,7 @@ bool HelloWorld::init()
     visibleSize = Director::getInstance()->getVisibleSize();
 
 	hasStart = false;
-
+	hasGameOver = false;
 	coun = 0;
 	isMove = false;
 
@@ -48,7 +48,7 @@ bool HelloWorld::init()
 	// update 
 	scheduleUpdate();
 
-	//obstacle->addOne(300);
+	obstacle->addOne(300);
 	addProp(425);
 
     return true;
@@ -189,7 +189,7 @@ void HelloWorld::update(float time) {
 
 
 	// gameover if the ball is out of the screen
-	if (ball->getPositionY() < 0.00001) {
+	if (!hasGameOver && ball->getPositionY() < 0.00001) {
 		gameOver();
 	}
 }
@@ -202,14 +202,7 @@ void HelloWorld::addListener()
 }
 
 void HelloWorld::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
-	static int offsetY = 100;
-	if (code == cocos2d::EventKeyboard::KeyCode::KEY_SPACE) {
-		// add an obstacle and a prop
-		obstacle->addOne(offsetY);
-		addProp(offsetY - 150);
-		offsetY += 300;
-	}
-	else if (code == cocos2d::EventKeyboard::KeyCode::KEY_UP_ARROW) {
+	if (code == cocos2d::EventKeyboard::KeyCode::KEY_UP_ARROW) {
 		velocity = 6;
 	}
 }
@@ -218,8 +211,24 @@ void HelloWorld::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
 * Or ball drop under the game scene
 */
 void HelloWorld::gameOver() {
-	log("fail");
-	onBallCrashProps();
+	hasGameOver = true;
+	this->unscheduleUpdate();
+	ball->removeFromParentAndCleanup(true);
+	auto label1 = Label::createWithTTF("Game Over", "fonts/arial.TTF", 60);
+	label1->setPosition(visibleSize.width / 2, visibleSize.height / 2);
+	this->addChild(label1, 3);
+
+	auto label2 = Label::createWithTTF("Play again", "fonts/arial.TTF", 30);
+	auto replayBtn = MenuItemLabel::create(label2, CC_CALLBACK_1(HelloWorld::replayCallback, this));
+	Menu* replay = Menu::create(replayBtn , NULL);
+	replay->setPosition(visibleSize.width / 2 - 80, visibleSize.height / 2 - 100);
+	this->addChild(replay, 3);
+
+	auto label3 = Label::createWithTTF("Submit score", "fonts/arial.TTF", 30);
+	auto exitBtn = MenuItemLabel::create(label3, CC_CALLBACK_1(HelloWorld::submitCallback, this));
+	Menu* exit = Menu::create(exitBtn, NULL);
+	exit->setPosition(visibleSize.width / 2 + 90, visibleSize.height / 2 - 100);
+	this->addChild(exit, 3);
 }
 /*
 * Please elminate the Props before call this function
@@ -236,6 +245,8 @@ void HelloWorld::onBallCrashProps() {
 	} while (TAG_BALL[r] == before);
 	ball->setTexture(IMG_BALL[r]);
 	ball->setTag(TAG_BALL[r]);
+	// when score reach 5 times then improve the velocity of rotate
+
 }
 
 bool HelloWorld::addBall()
@@ -256,4 +267,13 @@ void HelloWorld::addProp(int offsetY)
 	prop->setTag(TAG_PROP);
 	props.pushBack(prop);
 	addChild(prop, 1);
+}
+void HelloWorld::replayCallback(Ref * pSender)
+{
+	Director::getInstance()->replaceScene(HelloWorld::createScene());
+}
+
+void HelloWorld::submitCallback(Ref * pSender)
+{
+
 }

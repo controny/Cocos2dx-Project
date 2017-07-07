@@ -24,7 +24,8 @@ public:
 	bool addBall();
 
 	void addProp(int offsetY);
-
+	void replayCallback(Ref * pSender);
+	void submitCallback(Ref * pSender);
 	void preloadMusic(); 
 
     // implement the "static create()" method manually
@@ -42,7 +43,7 @@ private:
 	float obV;
 	int coun;
 	Label* scoreLabel;
-
+	bool hasGameOver;
 };
 
 #endif // __HELLOWORLD_SCENE_H__
