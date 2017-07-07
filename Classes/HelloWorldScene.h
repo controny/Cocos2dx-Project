@@ -24,7 +24,8 @@ public:
 	bool addBall();
 
 	void addProp(int offsetY);
-
+	void replayCallback(Ref * pSender);
+	void submitCallback(Ref * pSender);
 	void preloadMusic(); 
 
     // implement the "static create()" method manually
