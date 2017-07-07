@@ -1,9 +1,36 @@
 #pragma execution_character_set("utf-8")
 #include "HelloWorldScene.h"
 #include "SimpleAudioEngine.h"
+#include "ui/CocosGUI.h"
 #include <iostream>
+#include "LoginScene.h"
+#include "cocostudio/CocoStudio.h"
+#include "json/rapidjson.h"
+#include "json/document.h"
+#include "json/writer.h"
+#include "json/stringbuffer.h"
+#include "Global.h"
+#include "GameScene.h"
+#include "network/HttpClient.h"
+#define database UserDefault::getInstance()
 
+using namespace cocos2d::network;
+
+#include <regex>
+using std::to_string;
+using std::regex;
+using std::match_results;
+using std::regex_match;
+using std::cmatch;
+using namespace rapidjson;
 USING_NS_CC;
+
+using namespace cocostudio::timeline;
+
+#include "json/document.h"
+#include "json/writer.h"
+#include "json/stringbuffer.h"
+
 using namespace CocosDenshion;
 
 Scene* HelloWorld::createScene()
@@ -46,6 +73,16 @@ bool HelloWorld::init()
 	scoreLabel->setPosition(Vec2(80, visibleSize.height - 30));
 	addChild(scoreLabel, 0);
 	// update 
+	
+	if (!database->getBoolForKey("isExist")) {
+		database->setBoolForKey("isExist", true);
+		database->setIntegerForKey("value", 0);
+	}
+	string temp = "Local highest score : " + to_string(database->getIntegerForKey("value"));
+	highest = Label::createWithTTF(temp, "fonts/arial.TTF", 30);
+	highest->setPosition(Vec2(highest->getContentSize().width / 2, scoreLabel->getPosition().y - scoreLabel->getContentSize().height));
+	addChild(highest, 0);
+	//xmx
 	scheduleUpdate();
 
 	obstacle->addOne(300);
@@ -210,6 +247,19 @@ void HelloWorld::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
 * Or ball drop under the game scene
 */
 void HelloWorld::gameOver() {
+	//xmx
+	float visibleHeight;
+	float visibleWidth;
+	Size size = Director::getInstance()->getVisibleSize();
+	visibleHeight = size.height;
+	visibleWidth = size.width;
+	if (database->getIntegerForKey("value") < score)
+	{
+		database->setIntegerForKey("value", score);
+		highest->setString("Local highest score : " + to_string(score));
+
+	}
+	//xmx
 	hasGameOver = true;
 	this->unscheduleUpdate();
 	ball->removeFromParentAndCleanup(true);
@@ -219,7 +269,7 @@ void HelloWorld::gameOver() {
 
 	auto label2 = Label::createWithTTF("Play again", "fonts/arial.TTF", 30);
 	auto replayBtn = MenuItemLabel::create(label2, CC_CALLBACK_1(HelloWorld::replayCallback, this));
-	Menu* replay = Menu::create(replayBtn , NULL);
+	Menu* replay = Menu::create(replayBtn, NULL);
 	replay->setPosition(visibleSize.width / 2 - 80, visibleSize.height / 2 - 100);
 	this->addChild(replay, 3);
 
@@ -228,6 +278,14 @@ void HelloWorld::gameOver() {
 	Menu* exit = Menu::create(exitBtn, NULL);
 	exit->setPosition(visibleSize.width / 2 + 90, visibleSize.height / 2 - 100);
 	this->addChild(exit, 3);
+	//xmx
+	auto button = Button::create();
+	button->setTitleText("Submit my score");
+	button->setTitleFontSize(30);
+	button->setPosition(Size(visibleWidth / 2, visibleHeight / 6));
+	this->addChild(button, 2);
+	button->addClickEventListener(CC_CALLBACK_1(HelloWorld::onclickSubmit, this));
+	//xmx
 }
 /*
 * Please elminate the Props before call this function
@@ -276,3 +334,52 @@ void HelloWorld::submitCallback(Ref * pSender)
 {
 
 }
+
+void HelloWorld::onclickSubmit(cocos2d::Ref* p)
+{
+	HttpRequest* request = new HttpRequest();
+
+	request->setRequestType(HttpRequest::Type::POST);
+
+	request->setUrl("http://localhost:8080/submit");
+
+	string s = "score=" + std::to_string(score);
+
+	const char* postData = s.c_str();
+	CCLOG("GetParseError %s\n", postData);
+	request->setRequestData(postData, strlen(postData));
+
+	request->setResponseCallback(CC_CALLBACK_2(HelloWorld::onSubmitHttpComplete, this));
+
+	std::vector<string> headers;
+	s = "Cookie: GAMESESSIONID=" + Global::gameSessionId;
+	headers.push_back(s);
+	request->setHeaders(headers);
+
+	cocos2d::network::HttpClient::getInstance()->send(request);
+
+	request->release();
+}
+//xmx
+void HelloWorld::onSubmitHttpComplete(HttpClient* sender, HttpResponse* response)
+{
+	if (!response) return;
+	if (!response->isSucceed()) {
+		log("response failed");
+		log("error buffer: %s", response->getErrorBuffer());
+	}
+	rapidjson::Document d;
+	std::vector<char> *buffer = response->getResponseData();
+	std::string str = Global::toString(buffer);
+
+	d.Parse<0>(str.c_str());
+	if (d.HasParseError()) CCLOG("GetParseError %s\n", d.GetParseError());
+	if (d.IsObject() && d.HasMember("info"))
+	{
+		sscanf(d["info"].GetString(), "%d", &(Global::score));
+		char str[100];
+		sprintf(str, "%d", Global::score);
+		Director::getInstance()->replaceScene(TransitionFade::create(1.0f, GameScene::createScene()));
+	}
+}
+//xmx
