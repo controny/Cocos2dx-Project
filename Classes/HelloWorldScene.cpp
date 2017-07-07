@@ -202,14 +202,7 @@ void HelloWorld::addListener()
 }
 
 void HelloWorld::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
-	static int offsetY = 100;
-	if (code == cocos2d::EventKeyboard::KeyCode::KEY_SPACE) {
-		// add an obstacle and a prop
-		obstacle->addOne(offsetY);
-		addProp(offsetY - 150);
-		offsetY += 300;
-	}
-	else if (code == cocos2d::EventKeyboard::KeyCode::KEY_UP_ARROW) {
+	if (code == cocos2d::EventKeyboard::KeyCode::KEY_UP_ARROW) {
 		velocity = 6;
 	}
 }
