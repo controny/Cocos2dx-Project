@@ -29,7 +29,7 @@ bool HelloWorld::init()
     visibleSize = Director::getInstance()->getVisibleSize();
 
 	hasStart = false;
-
+	hasGameOver = false;
 	coun = 0;
 	isMove = false;
 
@@ -189,7 +189,7 @@ void HelloWorld::update(float time) {
 
 
 	// gameover if the ball is out of the screen
-	if (ball->getPositionY() < 0.00001) {
+	if (!hasGameOver && ball->getPositionY() < 0.00001) {
 		gameOver();
 	}
 }
@@ -218,6 +218,7 @@ void HelloWorld::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
 * Or ball drop under the game scene
 */
 void HelloWorld::gameOver() {
+	hasGameOver = true;
 	this->unscheduleUpdate();
 	ball->removeFromParentAndCleanup(true);
 	auto label1 = Label::createWithTTF("Game Over", "fonts/arial.TTF", 60);
