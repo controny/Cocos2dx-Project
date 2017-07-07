@@ -1,10 +1,14 @@
-#ifndef __HELLOWORLD_SCENE_H__
-#define __HELLOWORLD_SCENE_H__
 
 #include "cocos2d.h"
 #include "Obstacle.h"
 #include "resource.h"
+#include "ui/CocosGUI.h"
+#include <string>
+#include "Global.h"
+using namespace cocos2d::ui;
 
+#include "network/HttpClient.h"
+using namespace cocos2d::network;
 USING_NS_CC;
 
 class HelloWorld : public cocos2d::Layer
@@ -28,6 +32,10 @@ public:
 	void submitCallback(Ref * pSender);
 	void preloadMusic(); 
 
+	void onclickSubmit(cocos2d::Ref* p);
+
+	void onSubmitHttpComplete(HttpClient* sender, HttpResponse* response);
+
     // implement the "static create()" method manually
     CREATE_FUNC(HelloWorld);
 
@@ -44,6 +52,6 @@ private:
 	int coun;
 	Label* scoreLabel;
 	bool hasGameOver;
+	Label* highest; //  xmx
 };
 
-#endif // __HELLOWORLD_SCENE_H__
