@@ -11,7 +11,8 @@ class  Obstacle :public Node
 public:
 	Array* obstacleList;
 
-	virtual void onEnter();
+	//virtual void onEnter();
+	Obstacle();
 
 	/**
 	 * Rotate  the obstacle
@@ -34,7 +35,23 @@ public:
 	 * @param  index the index of the obstacle in the array
 	 * @return       a constant in enumeration Property
 	 */
-	Property getProperty(int index);
+	Property getBottomProperty(int index);
+
+	/**
+	 * Get the top property of an obstacle specified by index
+	 * @param  index the index of the obstacle in the array
+	 * @return       a constant in enumeration Property
+	 */
+	Property getTopProperty(int index);
+
+private:
+
+	/**
+	 * Get the corresponding property based on rotation
+	 * @param  rotation the rotation of an obstacle
+	 * @return       a constant in enumeration Property   
+	 */
+	Property getPropertyByRotation(int rotation);
 };
 
 #endif
