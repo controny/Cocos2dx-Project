@@ -167,7 +167,7 @@ void HelloWorld::update(float time) {
 			if (disOutToObst < r / 2 - 150) {
 				if (ball->getPosition() > obst->getPosition()) {
 					auto color = obstacle->getTopProperty(i);
-					if (ball->getTag() - 2001 == color || (ball->getTag() - 2001 + 2) % 5 == color) {
+					if ((ball->getTag() - 2001 + 2) % 5 == color) {
 						log("safe");
 					}
 					else {
@@ -177,7 +177,7 @@ void HelloWorld::update(float time) {
 				}
 				else {
 					auto color = obstacle->getBottomProperty(i);
-					if (ball->getTag() - 2001 == color || (ball->getTag() - 2001 + 2) % 5 == color) {
+					if ((ball->getTag() - 2001 + 2) % 5 == color) {
 						log("safe");
 					}
 					else {
@@ -193,7 +193,7 @@ void HelloWorld::update(float time) {
 			if (disInnerToObst > r / 2 - dangerDis - 30) {
 				if (ball->getPosition() > obst->getPosition()) {
 					auto color = obstacle->getTopProperty(i);
-					if (ball->getTag() - 2001 == color || (ball->getTag() - 2001 + 2) % 5 == color) {
+					if ((ball->getTag() - 2001 + 2) % 5 == color) {
 						log("safe");
 					}
 					else {
@@ -203,7 +203,7 @@ void HelloWorld::update(float time) {
 				}
 				else {
 					auto color = obstacle->getBottomProperty(i);
-					if (ball->getTag() - 2001 == color || (ball->getTag() - 2001 + 2) % 5 == color) {
+					if ((ball->getTag() - 2001 + 2) % 5 == color) {
 						log("safe");
 					}
 					else {
@@ -241,7 +241,7 @@ void HelloWorld::addListener()
 }
 
 void HelloWorld::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
-	if (code == cocos2d::EventKeyboard::KeyCode::KEY_UP_ARROW) {
+	if (code == cocos2d::EventKeyboard::KeyCode::KEY_SPACE) {
 		velocity = 6;
 		if (GRAVITY < 0.000001f) {
 			GRAVITY = 0.2f;
@@ -343,8 +343,8 @@ void HelloWorld::onclickSubmit(cocos2d::Ref* p)
 	HttpRequest* request = new HttpRequest();
 
 	request->setRequestType(HttpRequest::Type::POST);
-
-	request->setUrl(Global::remoteServer + "/submit");
+	string url = Global::remoteServer + "/submit";
+	request->setUrl(url.c_str());
 
 	string s = "score=" + std::to_string(score);
 
