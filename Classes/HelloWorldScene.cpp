@@ -100,7 +100,7 @@ void HelloWorld::preloadMusic()
 
 void HelloWorld::update(float time) {
 	static int count = 0;
-	obstacle->update();
+	obstacle->update(1);
 	count++;
 
 	auto list = obstacle->obstacleList;
