@@ -253,7 +253,6 @@ void HelloWorld::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
 * Or ball drop under the game scene
 */
 void HelloWorld::gameOver() {
-	return;
 	//xmx
 	float visibleHeight;
 	float visibleWidth;
