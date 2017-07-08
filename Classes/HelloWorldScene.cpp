@@ -103,7 +103,7 @@ void HelloWorld::preloadMusic()
 
 void HelloWorld::update(float time) {
 	static int count = 0;
-	obstacle->update(0);
+	obstacle->update(updateTimes);
 	count++;
 
 	auto list = obstacle->obstacleList;
@@ -253,6 +253,7 @@ void HelloWorld::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
 * Or ball drop under the game scene
 */
 void HelloWorld::gameOver() {
+	return;
 	//xmx
 	float visibleHeight;
 	float visibleWidth;
@@ -305,8 +306,7 @@ void HelloWorld::onBallCrashProps() {
 	ball->setTag(TAG_BALL[r]);
 	// when score reach 3 times then improve the velocity of rotate
 	if (updateTimes < 5) {
-		updateTimes++;
-		obstacle->update(8*updateTimes);
+		updateTimes += 0.1;
 	}
 }
 
