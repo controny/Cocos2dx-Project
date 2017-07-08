@@ -154,7 +154,7 @@ void LoginScene::onclick(cocos2d::Ref* p)
 
 	request->setRequestType(HttpRequest::Type::POST);
 
-	request->setUrl("http://localhost:8080/login");
+	request->setUrl(Global::remoteServer + "/login");
 	string s = "username=" + name->getString();
 	const char* postData = s.c_str();
 	
