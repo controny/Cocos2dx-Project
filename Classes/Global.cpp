@@ -6,6 +6,7 @@ using std::match_results;
 using std::regex_match;
 using std::cmatch;
 
+const  string Global::remoteServer = "http://123.207.31.48:8080";
 string Global::gameSessionId = "";
 long Global::score = 0;
 
