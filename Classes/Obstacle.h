@@ -10,6 +10,7 @@ class  Obstacle :public Node
 {
 public:
 	Array* obstacleList;
+	static bool clockwise;
 
 	//virtual void onEnter();
 	Obstacle();

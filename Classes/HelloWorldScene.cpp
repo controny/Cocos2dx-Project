@@ -305,6 +305,8 @@ void HelloWorld::onBallCrashProps() {
 	ball->setTag(TAG_BALL[r]);
 	// when score reach 3 times then improve the velocity of rotate
 	if (updateTimes < 5) {
+		// switch between clockwise and anticlockwise randomly
+		Obstacle::clockwise = bool(random(0, 1) % 2);
 		updateTimes += 0.1;
 	}
 }

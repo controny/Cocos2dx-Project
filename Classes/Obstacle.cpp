@@ -1,6 +1,8 @@
 #include "Obstacle.h"
 #include "resource.h"
 
+bool Obstacle::clockwise = true;
+
 Obstacle::Obstacle()
 {
 	obstacleList = Array::create();
@@ -10,6 +12,8 @@ Obstacle::Obstacle()
 void Obstacle::update(float delta)
 {
 	float rotation = 1 + delta;
+	if (!clockwise)
+		rotation *= -1;
 	if (obstacleList == nullptr)
 		return;
 	for (int i = obstacleList->count() - 1; i >= 0; i--)
@@ -50,6 +54,9 @@ Property Obstacle::getBottomProperty(int index)
 {
 	auto obstacle = (Sprite *)obstacleList->getObjectAtIndex(index);
 	auto rotation = (int)(obstacle->getRotation()) % 360;
+	// deal with negative rotaion angle
+	if (rotation < 0)
+		rotation += 360;
 	return getPropertyByRotation(rotation);
 }
 
@@ -58,6 +65,9 @@ Property Obstacle::getTopProperty(int index)
 	auto obstacle = (Sprite *)obstacleList->getObjectAtIndex(index);
 	// Suppose that the obstacle ratates another half circle
 	auto rotation = (int)(obstacle->getRotation() + 180) % 360;
+	// deal with negative rotaion angle
+	if (rotation < 0)
+		rotation += 360;
 	return getPropertyByRotation(rotation);
 }
 
