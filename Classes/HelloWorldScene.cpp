@@ -313,10 +313,12 @@ void HelloWorld::onBallCrashProps() {
 
 bool HelloWorld::addBall()
 {
-	ball = Sprite::create(IMG_BALL[0]);
+	// randomly choose a property
+	int r = random(0, 5) % 5;
+	ball = Sprite::create(IMG_BALL[r]);
+	ball->setTag(TAG_BALL[r]);
 	ball->setScale(0.3f);
 	ball->setPosition(Vec2(visibleSize.width / 2, 50));
-	ball->setTag(TAG_BALL[0]);
 	addChild(ball, 1);
 	return true;
 }
