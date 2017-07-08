@@ -341,7 +341,7 @@ void HelloWorld::onclickSubmit(cocos2d::Ref* p)
 
 	request->setRequestType(HttpRequest::Type::POST);
 
-	request->setUrl("http://localhost:8080/submit");
+	request->setUrl(Global::remoteServer + "/submit");
 
 	string s = "score=" + std::to_string(score);
 
