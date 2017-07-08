@@ -60,6 +60,8 @@ bool HelloWorld::init()
 	coun = 0;
 	isMove = false;
 
+	GRAVITY = 0.0;
+
 	preloadMusic(); // Ô¤¼ÓÔØÒôÐ§
 
 	addListener();  // Ìí¼Ó¼àÌýÆ÷
@@ -100,7 +102,7 @@ void HelloWorld::preloadMusic()
 
 void HelloWorld::update(float time) {
 	static int count = 0;
-	obstacle->update();
+	obstacle->update(1);
 	count++;
 
 	auto list = obstacle->obstacleList;
@@ -240,6 +242,9 @@ void HelloWorld::addListener()
 void HelloWorld::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
 	if (code == cocos2d::EventKeyboard::KeyCode::KEY_UP_ARROW) {
 		velocity = 6;
+		if (GRAVITY < 0.000001f) {
+			GRAVITY = 0.2f;
+		}
 	}
 }
 /*
@@ -270,14 +275,9 @@ void HelloWorld::gameOver() {
 	auto label2 = Label::createWithTTF("Play again", "fonts/arial.TTF", 30);
 	auto replayBtn = MenuItemLabel::create(label2, CC_CALLBACK_1(HelloWorld::replayCallback, this));
 	Menu* replay = Menu::create(replayBtn, NULL);
-	replay->setPosition(visibleSize.width / 2 - 80, visibleSize.height / 2 - 100);
+	replay->setPosition(visibleSize.width / 2, visibleSize.height / 2 - 100);
 	this->addChild(replay, 3);
 
-	auto label3 = Label::createWithTTF("Submit score", "fonts/arial.TTF", 30);
-	auto exitBtn = MenuItemLabel::create(label3, CC_CALLBACK_1(HelloWorld::submitCallback, this));
-	Menu* exit = Menu::create(exitBtn, NULL);
-	exit->setPosition(visibleSize.width / 2 + 90, visibleSize.height / 2 - 100);
-	this->addChild(exit, 3);
 	//xmx
 	auto button = Button::create();
 	button->setTitleText("Submit my score");
