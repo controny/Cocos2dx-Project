@@ -1,166 +1,124 @@
-#include "GameScene.h"
-#include "json/rapidjson.h"
-#include "json/document.h"
-#include "json/writer.h"
-#include "json/stringbuffer.h"
-#include "network/HttpClient.h"
-#include <regex>
-#include "SimpleAudioEngine.h"
-#include "LoginScene.h"
-using std::regex;
-using std::match_results;
-using std::regex_match;
-using std::cmatch;
-using namespace rapidjson;
+ï»¿#include "GameScene.h"
 
 USING_NS_CC;
 
-cocos2d::Scene* GameScene::createScene() {
-    // 'scene' is an autorelease object
-    auto scene = Scene::create();
+Scene* GameScene::createScene()
+{
+	// 'scene' is an autorelease object
+	auto scene = Scene::create();
 
-    // 'layer' is an autorelease object
-    auto layer = GameScene::create();
+	// 'layer' is an autorelease object
+	auto layer = GameScene::create();
 
-    // add layer as a child to scene
-    scene->addChild(layer);
+	// add layer as a child to scene
+	scene->addChild(layer);
 
-    // return the scene
-    return scene;
+	// return the scene
+	return scene;
 }
 
-bool GameScene::init() {
-    if (!Layer::init())
-    {
-        return false;
-    }
+// on "init" you need to initialize your instance
+bool GameScene::init()
+{
 
-    Size size = Director::getInstance()->getVisibleSize();
+	if (!Layer::init())
+	{
+		return false;
+	}
+
+	Size visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
-    visibleHeight = size.height;
-    visibleWidth = size.width;
-	float winw = Director::getInstance()->getWinSize().width; //»ñÈ¡ÆÁÄ»¿í¶È
-	float winh = Director::getInstance()->getWinSize().height;//»ñÈ¡ÆÁÄ»¸ß¶È
-	auto bg = Sprite::create("bg.jpeg");
-	bg->setPosition(Vec2(visibleWidth / 2 + origin.x, visibleHeight / 2 + origin.y));
-	bg->setScaleX(winw / bg->getTextureRect().getMaxX()); //ÉèÖÃ¾«Áé¿í¶ÈËõ·Å±ÈÀý
-	bg->setScaleY(winh / bg->getTextureRect().getMaxY());
-	this->addChild(bg, 0);
-    score_field = TextField::create("Score", "Arial", 50);
-    score_field->setPosition(Size(visibleWidth / 4, visibleHeight / 4 * 3));
-	char str[100];
-	sprintf(str, "%d", Global::score);
-	score_field->setText(str);
-	this->addChild(score_field, 2);
 
-	auto label2 = Label::createWithTTF("Best Score", "fonts/arial.TTF", 50);
-	label2->setPosition(Size(visibleWidth / 4, visibleHeight / 4));
-	this->addChild(label2, 2);
-	ParticleSpiral* lizi = ParticleSpiral::create();
-	lizi->setPosition(label2->getPosition());
-	this->addChild(lizi, 1);
+	// set background
+	background = Sprite::create("level-background-0.jpg");
+	background->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
+	this->addChild(background, 0);
 
-    rank_field = TextField::create("", "Arial", 40);
-    rank_field->setPosition(Size(visibleWidth / 4 * 3, visibleHeight / 4 * 2.5));
-    this->addChild(rank_field, 2);
+	// add the stone layer
+	stoneLayer = Layer::create();
+	stoneLayer->setAnchorPoint(Vec2::ZERO);
+	stoneLayer->setPosition(Vec2::ZERO);
+	stone = Sprite::create("stone.png");
+	stone->setPosition(560, 480);
+	stoneLayer->addChild(stone, 0);
+	this->addChild(stoneLayer, 1);
 
-    rank_button = Button::create();
-    rank_button->setTitleText("Rank");
-    rank_button->setTitleFontSize(50);
-    rank_button->setPosition(Size(visibleWidth / 4 * 3, visibleHeight / 4));
-	rank_button->addClickEventListener(CC_CALLBACK_1(GameScene::onclickRank, this));
-    this->addChild(rank_button, 2);
-	ParticleSpiral* lizi2 = ParticleSpiral::create();
-	lizi2->setPosition(rank_button->getPosition());
-	this->addChild(lizi2, 1);
+	// add mouse layer
+	mouseLayer = Layer::create();
+	mouseLayer->setAnchorPoint(Vec2::ZERO);
+	mouseLayer->setPosition(Vec2::ZERO);
+	mouse = Sprite::createWithSpriteFrameName("gem-mouse-0.png");
+	Animate* mouseAnimate = Animate::create(AnimationCache::getInstance()->getAnimation("mouseAnimation"));
+	mouse->runAction(RepeatForever::create(mouseAnimate));
+	mouse->setPosition(visibleSize.width/2, visibleSize.height/2);
+	mouseLayer->addChild(mouse, 0);
+	this->addChild(mouseLayer, 1);
 
-	auto back_button = Button::create();
-	back_button->setTitleText("Back");
-	back_button->setTitleFontSize(50);
-	back_button->setPosition(Size(visibleWidth / 4 * 2, visibleHeight / 5));
-	back_button->addClickEventListener(CC_CALLBACK_1(GameScene::onclickBack, this));
-	this->addChild(back_button, 2);
-    return true;
+	// add shoot label
+	shoot = Label::createWithTTF("Shoot", "fonts/arial.ttf", 34);
+	shoot->setPosition(Vec2(visibleSize.width - shoot->getContentSize().width - 50,
+							stone->getPosition().y));
+	this->addChild(shoot, 1);
+
+	//add touch listener
+	EventListenerTouchOneByOne* listener = EventListenerTouchOneByOne::create();
+	listener->setSwallowTouches(true);
+	listener->onTouchBegan = CC_CALLBACK_2(GameScene::onTouchBegan, this);
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener->clone(), shoot);
+
+	return true;
 }
 
-void GameScene::onclickBack(cocos2d::Ref* p)
-{
-	Director::getInstance()->replaceScene(LoginScene::createScene());
-}
-/*
-void GameScene::onSubmitHttpComplete(HttpClient* sender, HttpResponse* response)
-{
-	if (!response) return;
-	if (!response->isSucceed()) {
-		log("response failed");
-		log("error buffer: %s", response->getErrorBuffer());
-	}
-	rapidjson::Document d;
-	std::vector<char> *buffer = response->getResponseData();
-	std::string str = Global::toString(buffer);
+bool GameScene::onTouchBegan(Touch *touch, Event *event) {
+	auto location = touch->getLocation();
+	auto target = static_cast<Label*>(event->getCurrentTarget());
 
-	d.Parse<0>(str.c_str());
-	if (d.HasParseError()) CCLOG("GetParseError %s\n", d.GetParseError());
-	if (d.IsObject() && d.HasMember("info"))
-	{
-		sscanf(d["info"].GetString(), "%d", &(Global::score));
-		char str[100];
-	    sprintf(str, "%d", Global::score);
-		score_field->setText(str);
-	}
-}*/
-void GameScene::onclickRank(cocos2d::Ref* p)
-{
-	HttpRequest* request = new HttpRequest();
-
-	request->setRequestType(HttpRequest::Type::GET);
-
-	string url = Global::remoteServer + "/rank?top=10";
-	request->setUrl(url.c_str());
-
-	request->setResponseCallback(CC_CALLBACK_2(GameScene::onRankHttpComplete, this));
-	
-	std::vector<string> headers;
-	string s = "Cookie: GAMESESSIONID=" + Global::gameSessionId;
-	headers.push_back(s);
-	request->setHeaders(headers);
-
-	cocos2d::network::HttpClient::getInstance()->send(request);
-
-	request->release();
-}
-
-void GameScene::onRankHttpComplete(HttpClient* sender, HttpResponse* response)
-{
-	if (!response) return;
-	if (!response->isSucceed()) {
-		log("response failed");
-		log("error buffer: %s", response->getErrorBuffer());
-	}
-	rapidjson::Document d;
-	std::vector<char> *buffer = response->getResponseData();
-	std::string str = Global::toString(buffer);
-	CCLOG("%s\n", str.c_str());
-	
-	d.Parse<0>(str.c_str());
-	string temp = "";
-	if (d.HasParseError()) CCLOG("GetParseError %s\n", d.GetParseError());
-	if (d.IsObject() && d.HasMember("info")) 
-	{
-		str = d["info"].GetString();
-
-		const char * delim = "|";
-		char* p = const_cast<char*>(str.c_str());
-
-		char* t = strtok(p, delim);
-		while (t)
-		{
-			temp += t;
-			temp += "\n";
-			CCLOG("%s\n", t);
-			t = strtok(NULL, delim);
-		}
-		rank_field->setText(temp);
+	if (target == shoot) {
+		Size s = target->getContentSize();
+		CCLOG("size: %f, %f", s.width, s.height);
+		CCLOG("Shoot");
+		target->setScale(1.5);
+		auto mouseLocation = mouse->getPosition();
+		auto rock = Sprite::create("stone.png");
+		rock->setPosition(stone->getPosition());
+		this->addChild(rock);
+		auto rockMove = MoveBy::create(1, rock->convertToNodeSpaceAR(mouseLocation));
+		auto fadeOut = FadeOut::create(4);
+		auto seq = Sequence::create(rockMove, fadeOut, nullptr);
+		rock->runAction(seq);
+		// move the mouse to a random position
+		Size bgSize = background->getContentSize();
+		srand(unsigned(time(0)));
+		double ranRatio = (rand() % 100) / (double)100;
+		CCLOG("ranRatio: %f", ranRatio);
+		double newPosX = bgSize.width * ranRatio;
+		ranRatio = (rand() % 100) / (double)100;
+		double newPosY = bgSize.height * ranRatio;
+		CCLOG("new position: %f, %f", newPosX, newPosY);
+		auto mouseMove = MoveTo::create(1, Vec2(newPosX, newPosY));
+		mouse->runAction(mouseMove);
+		// leave a diamond
+		auto diamond = Sprite::create("diamond.png");
+		diamond->setPosition(diamond->convertToNodeSpaceAR(mouseLocation));
+		this->addChild(diamond);
+	} else {
+		CCLOG("Put");
+		// put a cheese
+		auto cheese = Sprite::create("cheese.png");
+		cheese->setPosition(location);
+		this->addChild(cheese);
+		// make the cheese fade out in some time
+		auto fadeOut = FadeOut::create(4);
+		cheese->runAction(fadeOut);
+		// make the mouse move to the cheese
+		auto nodeLocation = mouse->convertToNodeSpaceAR(location);
+		auto move = MoveBy::create(2, nodeLocation);
+		mouse->runAction(move);
+		CCLOG("location: %f, %f", location.x, location.y);
+		CCLOG("nodeLocation: %f, %f", nodeLocation.x, nodeLocation.y);
+		CCLOG("currentLocation: %f, %f", mouse->getPosition().x, mouse->getPosition().y);
 	}
 
+	return true;
 }

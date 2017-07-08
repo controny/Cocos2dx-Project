@@ -1,44 +1,19 @@
-#pragma execution_character_set("utf-8")
 #include "HelloWorldScene.h"
 #include "SimpleAudioEngine.h"
-#include "ui/CocosGUI.h"
-#include <iostream>
-#include "LoginScene.h"
-#include "cocostudio/CocoStudio.h"
-#include "json/rapidjson.h"
-#include "json/document.h"
-#include "json/writer.h"
-#include "json/stringbuffer.h"
-#include "Global.h"
-#include "GameScene.h"
-#include "network/HttpClient.h"
-#define database UserDefault::getInstance()
 
-using namespace cocos2d::network;
-
-#include <regex>
-using std::to_string;
-using std::regex;
-using std::match_results;
-using std::regex_match;
-using std::cmatch;
-using namespace rapidjson;
 USING_NS_CC;
-
-using namespace cocostudio::timeline;
-
-#include "json/document.h"
-#include "json/writer.h"
-#include "json/stringbuffer.h"
-
-using namespace CocosDenshion;
 
 Scene* HelloWorld::createScene()
 {
+    // 'scene' is an autorelease object
     auto scene = Scene::create();
+    
+    // 'layer' is an autorelease object
     auto layer = HelloWorld::create();
+
+    // add layer as a child to scene
     scene->addChild(layer);
-	
+
     // return the scene
     return scene;
 }
@@ -53,336 +28,68 @@ bool HelloWorld::init()
         return false;
     }
     
-    visibleSize = Director::getInstance()->getVisibleSize();
+    auto visibleSize = Director::getInstance()->getVisibleSize();
+    Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
-	hasStart = false;
-	hasGameOver = false;
-	coun = 0;
-	isMove = false;
-	updateTimes = 0;
+    /////////////////////////////
+    // 2. add a menu item with "X" image, which is clicked to quit the program
+    //    you may modify it.
 
-	GRAVITY = 0.0;
+    // add a "close" icon to exit the progress. it's an autorelease object
+    auto closeItem = MenuItemImage::create(
+                                           "CloseNormal.png",
+                                           "CloseSelected.png",
+                                           CC_CALLBACK_1(HelloWorld::menuCloseCallback, this));
+    
+    closeItem->setPosition(Vec2(origin.x + visibleSize.width - closeItem->getContentSize().width/2 ,
+                                origin.y + closeItem->getContentSize().height/2));
 
-	preloadMusic(); // Ô¤¼ÓÔØÒôÐ§
+    // create menu, it's an autorelease object
+    auto menu = Menu::create(closeItem, NULL);
+    menu->setPosition(Vec2::ZERO);
+    this->addChild(menu, 1);
 
-	addListener();  // Ìí¼Ó¼àÌýÆ÷
-	addBall();    // Ìí¼ÓÐ¡Çò
+    /////////////////////////////
+    // 3. add your codes below...
 
-	obstacle = new Obstacle();
-	this->addChild(obstacle, 2);
+    // add a label shows "Hello World"
+    // create and initialize a label
+    
+    auto label = Label::createWithTTF("Hello World", "fonts/Marker Felt.ttf", 24);
+    
+    // position the label on the center of the screen
+    label->setPosition(Vec2(origin.x + visibleSize.width/2,
+                            origin.y + visibleSize.height - label->getContentSize().height));
 
-	score = 0;
-	scoreLabel = Label::createWithTTF("score : 0", "fonts/arial.TTF",30);
-	scoreLabel->setPosition(Vec2(80, visibleSize.height - 30));
-	addChild(scoreLabel, 0);
-	// update 
-	
-	if (!database->getBoolForKey("isExist")) {
-		database->setBoolForKey("isExist", true);
-		database->setIntegerForKey("value", 0);
-	}
-	string temp = "Local highest score : " + to_string(database->getIntegerForKey("value"));
-	highest = Label::createWithTTF(temp, "fonts/arial.TTF", 30);
-	highest->setPosition(Vec2(highest->getContentSize().width / 2, scoreLabel->getPosition().y - scoreLabel->getContentSize().height));
-	addChild(highest, 0);
-	//xmx
-	scheduleUpdate();
+    // add the label as a child to this layer
+    this->addChild(label, 1);
 
-	obstacle->addOne(300);
-	addProp(475);
+    // add "HelloWorld" splash screen"
+    auto sprite = Sprite::create("HelloWorld.png");
 
-	obstacle->addOne(675);
-	addProp(850);
+    // position the sprite on the center of the screen
+    sprite->setPosition(Vec2(visibleSize.width/2 + origin.x, visibleSize.height/2 + origin.y));
 
+    // add the sprite as a child to this layer
+    this->addChild(sprite, 0);
+    
     return true;
 }
 
-void HelloWorld::preloadMusic()
+
+void HelloWorld::menuCloseCallback(Ref* pSender)
 {
+    //Close the cocos2d-x game scene and quit the application
+    Director::getInstance()->end();
+
+    #if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+    exit(0);
+#endif
+    
+    /*To navigate back to native iOS screen(if present) without quitting the application  ,do not use Director::getInstance()->end() and exit(0) as given above,instead trigger a custom event created in RootViewController.mm as below*/
+    
+    //EventCustom customEndEvent("game_scene_close_event");
+    //_eventDispatcher->dispatchEvent(&customEndEvent);
+    
+    
 }
-
-void HelloWorld::update(float time) {
-	static int count = 0;
-	obstacle->update(updateTimes);
-	count++;
-
-	auto list = obstacle->obstacleList;
-
-	if (count == 100) {
-		obstacle->deleteOne();
-		count = 0;
-	}
-	// add a new obstacle
-	if (coun == 5) {
-		if (list->count() - 1 >= 0 && props.size() - 1 >= 0) {
-			auto lastone = (Sprite*)list->getObjectAtIndex(list->count() - 1);
-			obstacle->addOne(lastone->getPositionY() + 375);
-			auto last = props.back();
-			int dy = last->getPositionY() + 375;
-			addProp(dy);
-		}
-
-		coun = 0;
-	}
-
-	// move the obstacle 
-	auto pos = ball->getPosition();
-
-	if (pos.y > visibleSize.height / 2) {
-		++coun;
-		if (velocity >= 0.000001) obV = velocity;
-		ball->setPosition(ball->getPosition() + Vec2(0, -2));
-		isMove = true;
-		velocity = 0;
-	}
-	else {
-
-		velocity -= GRAVITY;
-		ball->setPositionY(ball->getPositionY() + velocity);
-	}
-	if (isMove) {
-		obV -= GRAVITY;
-		for (int i = 0; i < props.size(); ++i) {
-			auto p = props.at(i);
-			p->setPositionY(p->getPositionY() - obV);
-		}
-		for (int i = 0; i < list->count(); ++i) {
-			auto s = (Sprite*)list->getObjectAtIndex(i);
-
-			s->setPositionY(s->getPositionY() - obV);
-		}
-		if (obV <= 0.00001) isMove = false;
-	}
-	// judge whether there is a collission with obstacles
-	auto body = ball->getBoundingBox();
-	for (int i = 0; i < list->count(); ++i) {
-		auto obst = ((Sprite*)list->getObjectAtIndex(i));
-		auto r = obst->getContentSize().height * 0.5;
-		auto dangerDis = r * 5 / 39;
-		auto dis = fabs(obst->getPositionY() - ball->getPositionY());
-		auto disInnerToObst = dis + ball->getContentSize().height * 0.3 * 0.5;
-		auto disOutToObst = dis - ball->getContentSize().height * 0.3 * 0.5;
-		
-		if (dis > r / 2 - 20) {
-			if (disOutToObst < r / 2 - 150) {
-				if (ball->getPosition() > obst->getPosition()) {
-					auto color = obstacle->getTopProperty(i);
-					if ((ball->getTag() - 2001 + 2) % 5 == color) {
-						log("safe");
-					}
-					else {
-						gameOver();
-						break;
-					}
-				}
-				else {
-					auto color = obstacle->getBottomProperty(i);
-					if ((ball->getTag() - 2001 + 2) % 5 == color) {
-						log("safe");
-					}
-					else {
-						gameOver();
-						break;
-					}
-				}
-				
-			}
-			
-		}
-		else {
-			if (disInnerToObst > r / 2 - dangerDis - 30) {
-				if (ball->getPosition() > obst->getPosition()) {
-					auto color = obstacle->getTopProperty(i);
-					if ((ball->getTag() - 2001 + 2) % 5 == color) {
-						log("safe");
-					}
-					else {
-						gameOver();
-						break;
-					}
-				}
-				else {
-					auto color = obstacle->getBottomProperty(i);
-					if ((ball->getTag() - 2001 + 2) % 5 == color) {
-						log("safe");
-					}
-					else {
-						gameOver();
-						break;
-					}
-				}
-			}
-		}
-	}
-
-	// judge whether there is a collision with props
-	for (int i = 0; i < props.size(); ++i) {
-		auto rect = props.at(i)->getBoundingBox();
-		if (body.intersectsRect(rect)) {
-			onBallCrashProps();
-			removeChild(props.at(i));
-			props.erase(i);
-			break;
-		}
-	}
-
-
-	// gameover if the ball is out of the screen
-	if (!hasGameOver && ball->getPositionY() < 0.00001) {
-		gameOver();
-	}
-}
-
-void HelloWorld::addListener()
-{
-	auto keyboardListener = EventListenerKeyboard::create();
-	keyboardListener->onKeyPressed = CC_CALLBACK_2(HelloWorld::onKeyPressed, this);
-	_eventDispatcher->addEventListenerWithSceneGraphPriority(keyboardListener, this);
-}
-
-void HelloWorld::onKeyPressed(EventKeyboard::KeyCode code, Event* event) {
-	if (code == cocos2d::EventKeyboard::KeyCode::KEY_SPACE) {
-		velocity = 6;
-		if (GRAVITY < 0.000001f) {
-			GRAVITY = 0.2f;
-		}
-	}
-}
-/*
-* When ball clash obstacle and the color is error 
-* Or ball drop under the game scene
-*/
-void HelloWorld::gameOver() {
-	//xmx
-	float visibleHeight;
-	float visibleWidth;
-	Size size = Director::getInstance()->getVisibleSize();
-	visibleHeight = size.height;
-	visibleWidth = size.width;
-	if (database->getIntegerForKey("value") < score)
-	{
-		database->setIntegerForKey("value", score);
-		highest->setString("Local highest score : " + to_string(score));
-
-	}
-	//xmx
-	hasGameOver = true;
-	this->unscheduleUpdate();
-	ball->removeFromParentAndCleanup(true);
-	auto label1 = Label::createWithTTF("Game Over", "fonts/arial.TTF", 60);
-	label1->setPosition(visibleSize.width / 2, visibleSize.height / 2);
-	this->addChild(label1, 3);
-
-	auto label2 = Label::createWithTTF("Play again", "fonts/arial.TTF", 30);
-	auto replayBtn = MenuItemLabel::create(label2, CC_CALLBACK_1(HelloWorld::replayCallback, this));
-	Menu* replay = Menu::create(replayBtn, NULL);
-	replay->setPosition(visibleSize.width / 2, visibleSize.height / 2 - 100);
-	this->addChild(replay, 3);
-
-	//xmx
-	auto button = Button::create();
-	button->setTitleText("Submit my score");
-	button->setTitleFontSize(30);
-	button->setPosition(Size(visibleWidth / 2, visibleHeight / 6));
-	this->addChild(button, 2);
-	button->addClickEventListener(CC_CALLBACK_1(HelloWorld::onclickSubmit, this));
-	//xmx
-}
-/*
-* Please elminate the Props before call this function
-* Ball will change its color in this function
-*/
-void HelloWorld::onBallCrashProps() {
-	score++;
-	std::string s = "score : " + std::to_string(score);
-	scoreLabel->setString(s);
-	int before = ball->getTag();
-	int r;
-	do {
-		r = random(0, 5) % 5;
-	} while (TAG_BALL[r] == before);
-	ball->setTexture(IMG_BALL[r]);
-	ball->setTag(TAG_BALL[r]);
-	// when score reach 3 times then improve the velocity of rotate
-	if (updateTimes < 5) {
-		updateTimes += 0.1;
-	}
-}
-
-bool HelloWorld::addBall()
-{
-	ball = Sprite::create(IMG_BALL[0]);
-	ball->setScale(0.3f);
-	ball->setPosition(Vec2(visibleSize.width / 2, 50));
-	ball->setTag(TAG_BALL[0]);
-	addChild(ball, 1);
-	return true;
-}
-
-void HelloWorld::addProp(int offsetY)
-{
-	auto prop = Sprite::create(IMG_PROP);
-	prop->setScale(0.1);
-	prop->setPosition(Vec2(visibleSize.width / 2, offsetY));
-	prop->setTag(TAG_PROP);
-	props.pushBack(prop);
-	addChild(prop, 1);
-}
-void HelloWorld::replayCallback(Ref * pSender)
-{
-	Director::getInstance()->replaceScene(HelloWorld::createScene());
-}
-
-void HelloWorld::submitCallback(Ref * pSender)
-{
-
-}
-
-void HelloWorld::onclickSubmit(cocos2d::Ref* p)
-{
-	HttpRequest* request = new HttpRequest();
-
-	request->setRequestType(HttpRequest::Type::POST);
-	string url = Global::remoteServer + "/submit";
-	request->setUrl(url.c_str());
-
-	string s = "score=" + std::to_string(score);
-
-	const char* postData = s.c_str();
-	CCLOG("GetParseError %s\n", postData);
-	request->setRequestData(postData, strlen(postData));
-
-	request->setResponseCallback(CC_CALLBACK_2(HelloWorld::onSubmitHttpComplete, this));
-
-	std::vector<string> headers;
-	s = "Cookie: GAMESESSIONID=" + Global::gameSessionId;
-	headers.push_back(s);
-	request->setHeaders(headers);
-
-	cocos2d::network::HttpClient::getInstance()->send(request);
-
-	request->release();
-}
-//xmx
-void HelloWorld::onSubmitHttpComplete(HttpClient* sender, HttpResponse* response)
-{
-	if (!response) return;
-	if (!response->isSucceed()) {
-		log("response failed");
-		log("error buffer: %s", response->getErrorBuffer());
-	}
-	rapidjson::Document d;
-	std::vector<char> *buffer = response->getResponseData();
-	std::string str = Global::toString(buffer);
-
-	d.Parse<0>(str.c_str());
-	if (d.HasParseError()) CCLOG("GetParseError %s\n", d.GetParseError());
-	if (d.IsObject() && d.HasMember("info"))
-	{
-		sscanf(d["info"].GetString(), "%d", &(Global::score));
-		char str[100];
-		sprintf(str, "%d", Global::score);
-		Director::getInstance()->replaceScene(TransitionFade::create(1.0f, GameScene::createScene()));
-	}
-}
-//xmx
