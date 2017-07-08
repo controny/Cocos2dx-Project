@@ -73,12 +73,12 @@ bool LoginScene::init()
 	const char *str1 = ((__String*)chnStrings->objectForKey("string1"))->getCString();
 
 	auto title = Label::create(str1, "fonts/AdobeFangsongStd-Regular.otf", 50);
-	title->setPosition(Vec2(visibleSize.width / 4 + origin.x + 20, (visibleSize.height - visibleSize.height / 4) + origin.y));
+	title->setPosition(Vec2(visibleSize.width / 4 + origin.x + 20, (visibleSize.height - visibleSize.height / 8) + origin.y));
 	this->addChild(title, 2);
 
 	const char *str2 = ((__String*)chnStrings->objectForKey("string2"))->getCString();
 	auto content = Label::create(str2, "fonts/AdobeFangsongStd-Regular.otf", 15);
-	content->setPosition(Vec2(visibleSize.width / 3 + origin.x + 20, title->getPosition().y - title->getContentSize().height - 60));
+	content->setPosition(Vec2(visibleSize.width / 3 + origin.x + 20, title->getPosition().y - title->getContentSize().height - 98));
 	content->setWidth(500);
 	this->addChild(content, 2);
 
@@ -91,8 +91,8 @@ bool LoginScene::init()
 	name->setTextColor(Color4B::WHITE);
 	name->setPlaceHolderColor(Color4B::WHITE);
 
-	f->setContentSize(Size(visibleSize.width/12 * 1.5, visibleSize.width/12));
-	f->setPosition(Vec2((visibleSize.width / 5) + origin.x, (visibleSize.height / 5) + origin.y));
+	f->setContentSize(Size(visibleSize.width/12 * 3, visibleSize.width/12));
+	f->setPosition(Vec2((visibleSize.width / 5) + origin.x + 50, (visibleSize.height / 5) + origin.y));
 
 	this->addChild(f, 2);
 	this->addChild(name, 3);
@@ -150,21 +150,22 @@ bool LoginScene::init()
 void LoginScene::onclick(cocos2d::Ref* p)
 {
 	
-	HttpRequest* request = new HttpRequest();
+		HttpRequest* request = new HttpRequest();
 
-	request->setRequestType(HttpRequest::Type::POST);
-	string url = Global::remoteServer + "/login";
-	request->setUrl(url.c_str());
-	string s = "username=" + name->getString();
-	const char* postData = s.c_str();
-	
-	request->setRequestData(postData, strlen(postData));
+		request->setRequestType(HttpRequest::Type::POST);
+		string url = Global::remoteServer + "/login";
+		request->setUrl(url.c_str());
+		string s = "username=" + name->getString();
+		const char* postData = s.c_str();
 
-	request->setResponseCallback(CC_CALLBACK_2(LoginScene::onHttpComplete, this));
+		request->setRequestData(postData, strlen(postData));
 
-	cocos2d::network::HttpClient::getInstance()->send(request);
+		request->setResponseCallback(CC_CALLBACK_2(LoginScene::onHttpComplete, this));
 
-	request->release();
+		cocos2d::network::HttpClient::getInstance()->send(request);
+
+		request->release();
+
 	Director::getInstance()->replaceScene(TransitionFade::create(1.0f, HelloWorld::createScene()));
 
 }
@@ -174,6 +175,7 @@ void LoginScene::onHttpComplete(HttpClient* sender, HttpResponse* response) {
 	if (!response->isSucceed()) {
 		log("response failed");
 		log("error buffer: %s", response->getErrorBuffer());
+		return;
 	}
 	rapidjson::Document d;
 	std::vector<char> *buffer = response->getResponseData();

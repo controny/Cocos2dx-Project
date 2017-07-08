@@ -46,11 +46,17 @@ bool GameScene::init() {
 	bg->setScaleX(winw / bg->getTextureRect().getMaxX()); //设置精灵宽度缩放比例
 	bg->setScaleY(winh / bg->getTextureRect().getMaxY());
 	this->addChild(bg, 0);
-    score_field = TextField::create("Score", "Arial", 50);
+    score_field = TextField::create("Score", "Arial", 30);
     score_field->setPosition(Size(visibleWidth / 4, visibleHeight / 4 * 3));
-	char str[100];
-	sprintf(str, "%d", Global::score);
-	score_field->setText(str);
+	if (Global::gameSessionId.length() == 0)
+	{
+		score_field->setText("Only record login users' scores");
+	}
+	else {
+		char str[100];
+		sprintf(str, "%d", Global::score);
+		score_field->setText(str);
+	}
 	this->addChild(score_field, 2);
 
 	auto label2 = Label::createWithTTF("Best Score", "fonts/arial.TTF", 50);
@@ -60,7 +66,7 @@ bool GameScene::init() {
 	lizi->setPosition(label2->getPosition());
 	this->addChild(lizi, 1);
 
-    rank_field = TextField::create("", "Arial", 40);
+    rank_field = TextField::create("", "Arial", 30);
     rank_field->setPosition(Size(visibleWidth / 4 * 3, visibleHeight / 4 * 2.5));
     this->addChild(rank_field, 2);
 
@@ -148,19 +154,23 @@ void GameScene::onRankHttpComplete(HttpClient* sender, HttpResponse* response)
 	if (d.IsObject() && d.HasMember("info")) 
 	{
 		str = d["info"].GetString();
-
-		const char * delim = "|";
-		char* p = const_cast<char*>(str.c_str());
-
-		char* t = strtok(p, delim);
-		while (t)
-		{
-			temp += t;
-			temp += "\n";
-			CCLOG("%s\n", t);
-			t = strtok(NULL, delim);
+		if (Global::gameSessionId.length() == 0) {
+			rank_field->setText("Log in before you check the scores");
 		}
-		rank_field->setText(temp);
+		else {
+			const char * delim = "|";
+			char* p = const_cast<char*>(str.c_str());
+
+			char* t = strtok(p, delim);
+			while (t)
+			{
+				temp += t;
+				temp += "\n";
+				CCLOG("%s\n", t);
+				t = strtok(NULL, delim);
+			}
+			rank_field->setText(temp);
+		}
 	}
 
 }

@@ -374,6 +374,15 @@ void HelloWorld::onSubmitHttpComplete(HttpClient* sender, HttpResponse* response
 	if (!response->isSucceed()) {
 		log("response failed");
 		log("error buffer: %s", response->getErrorBuffer());
+		log("you should log in before you submit and check the scores");
+		auto label3 = Label::createWithTTF("Clike me! Please Connect the Internet and log in.", "fonts/arial.TTF", 30);
+		auto logOutBtn = MenuItemLabel::create(label3, [&](Ref* sender) {
+			Director::getInstance()->replaceScene(LoginScene::createScene());
+		});
+		Menu* logOut = Menu::create(logOutBtn, NULL);
+		logOut->setPosition(visibleSize.width / 2, visibleSize.height / 8);
+		this->addChild(logOut, 3);
+		return;
 	}
 	rapidjson::Document d;
 	std::vector<char> *buffer = response->getResponseData();
