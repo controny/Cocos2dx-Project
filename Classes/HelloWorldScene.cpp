@@ -59,6 +59,7 @@ bool HelloWorld::init()
 	hasGameOver = false;
 	coun = 0;
 	isMove = false;
+	updateTimes = 0;
 
 	GRAVITY = 0.0;
 
@@ -302,8 +303,11 @@ void HelloWorld::onBallCrashProps() {
 	} while (TAG_BALL[r] == before);
 	ball->setTexture(IMG_BALL[r]);
 	ball->setTag(TAG_BALL[r]);
-	// when score reach 5 times then improve the velocity of rotate
-
+	// when score reach 3 times then improve the velocity of rotate
+	if (updateTimes < 5) {
+		updateTimes++;
+		obstacle->update(8*updateTimes);
+	}
 }
 
 bool HelloWorld::addBall()
