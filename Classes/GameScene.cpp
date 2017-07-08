@@ -115,7 +115,7 @@ void GameScene::onclickRank(cocos2d::Ref* p)
 
 	request->setRequestType(HttpRequest::Type::GET);
 
-	request->setUrl("http://localhost:8080/rank?top=10");
+	request->setUrl(Global::remoteServer + "/rank?top=10");
 
 	request->setResponseCallback(CC_CALLBACK_2(GameScene::onRankHttpComplete, this));
 	

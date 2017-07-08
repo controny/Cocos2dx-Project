@@ -10,6 +10,7 @@ class Global
 public:
     Global();
     ~Global();
+	const  static string remoteServer;
     static string gameSessionId;
     static long score;
 

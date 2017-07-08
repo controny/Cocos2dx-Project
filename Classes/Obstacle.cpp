@@ -7,14 +7,14 @@ Obstacle::Obstacle()
 	obstacleList->retain();
 }
 
-void Obstacle::update()
+void Obstacle::update(float delta)
 {
+	float rotation = 1 + delta;
 	if (obstacleList == nullptr)
 		return;
 	for (int i = obstacleList->count() - 1; i >= 0; i--)
 	{
 		auto s = (Sprite*)obstacleList->getObjectAtIndex(i);
-		float rotation = 1;
 		s->setRotation(s->getRotation() + rotation);
 	}
 }

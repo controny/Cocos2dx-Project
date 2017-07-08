@@ -52,6 +52,7 @@ private:
 	int coun;
 	Label* scoreLabel;
 	bool hasGameOver;
+	float updateTimes;
 	Label* highest; //  xmx
 };
 

@@ -59,6 +59,7 @@ bool HelloWorld::init()
 	hasGameOver = false;
 	coun = 0;
 	isMove = false;
+	updateTimes = 0;
 
 	GRAVITY = 0.0;
 
@@ -102,7 +103,7 @@ void HelloWorld::preloadMusic()
 
 void HelloWorld::update(float time) {
 	static int count = 0;
-	obstacle->update();
+	obstacle->update(updateTimes);
 	count++;
 
 	auto list = obstacle->obstacleList;
@@ -302,8 +303,10 @@ void HelloWorld::onBallCrashProps() {
 	} while (TAG_BALL[r] == before);
 	ball->setTexture(IMG_BALL[r]);
 	ball->setTag(TAG_BALL[r]);
-	// when score reach 5 times then improve the velocity of rotate
-
+	// when score reach 3 times then improve the velocity of rotate
+	if (updateTimes < 5) {
+		updateTimes += 0.1;
+	}
 }
 
 bool HelloWorld::addBall()
@@ -341,7 +344,7 @@ void HelloWorld::onclickSubmit(cocos2d::Ref* p)
 
 	request->setRequestType(HttpRequest::Type::POST);
 
-	request->setUrl("http://localhost:8080/submit");
+	request->setUrl(Global::remoteServer + "/submit");
 
 	string s = "score=" + std::to_string(score);
 
