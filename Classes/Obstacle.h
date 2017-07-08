@@ -16,9 +16,9 @@ public:
 
 	/**
 	 * Rotate  the obstacle
-	 * @param rotation angular velocity of obstacles
+	 * @param delta increment of angular velocity of obstacles
 	 */
-	void update(float rotation); 
+	void update(float delta); 
 
 	/**
 	 * Add an obstacle
