@@ -1,37 +1,37 @@
-#ifndef __GAME_SENCE_H__
-#define __GAME_SENCE_H__
+#pragma once
 
 #include "cocos2d.h"
-USING_NS_CC;
+#include "ui/CocosGUI.h"
+#include <string>
+#include "Global.h"
+using namespace cocos2d::ui;
+
+#include "network/HttpClient.h"
+using namespace cocos2d::network;
+
+using std::string;
 
 class GameScene : public cocos2d::Layer
 {
 public:
-	static cocos2d::Scene* createScene();
+    // there's no 'id' in cpp, so we recommend returning the class instance pointer
+    static cocos2d::Scene* createScene();
 
-	virtual bool init();
+    // Here's a difference. Method 'init' in cocos2d-x returns bool, instead of returning 'id' in cocos2d-iphone
+    virtual bool init();
 
-	virtual bool onTouchBegan(Touch *touch, Event *unused_event);
+    // implement the "static create()" method manually
+    CREATE_FUNC(GameScene);
+	void onclickBack(cocos2d::Ref* p);
+	void onclickRank(cocos2d::Ref* p);
+	void onBackHttpComplete(HttpClient* sender, HttpResponse* response);
+	void onRankHttpComplete(HttpClient* sender, HttpResponse* response);
 
-	//virtual void shootMenuCallback(Ref* pSender);
-
-	CREATE_FUNC(GameScene);
-
-private:
-
-	Sprite* background;
-	
-	Sprite* mouse;
-
-	Sprite* stone;
-	
-	Layer* mouseLayer;
-	
-	Layer* stoneLayer;
-
-	Label* shoot;
-
+    float visibleHeight;
+    float visibleWidth;
+    TextField * score_field;
+    TextField * rank_field;
+    Button *submit_button;
+    Button *rank_button;
 };
-
-#endif // __GAME_SENCE_H__
 
