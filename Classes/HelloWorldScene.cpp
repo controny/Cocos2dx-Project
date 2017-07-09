@@ -163,11 +163,18 @@ void HelloWorld::update(float time) {
 		auto disInnerToObst = dis + ball->getContentSize().height * 0.3 * 0.5;
 		auto disOutToObst = dis - ball->getContentSize().height * 0.3 * 0.5;
 		
+		// xq
+		int tag = ball->getTag();
 		if (dis > r / 2 - 20) {
+			
 			if (disOutToObst < r / 2 - 150) {
 				if (ball->getPosition() > obst->getPosition()) {
 					auto color = obstacle->getTopProperty(i);
-					if ((ball->getTag() - 2001 + 2) % 5 == color) {
+					if ((tag == 2001 && color == 2) || 
+						(tag == 2002 && color == 3) || 
+						(tag == 2003 && color == 1) || 
+						(tag == 2004 && color == 4) || 
+						(tag == 2005 && color == 0)) {
 						log("safe");
 					}
 					else {
@@ -177,7 +184,11 @@ void HelloWorld::update(float time) {
 				}
 				else {
 					auto color = obstacle->getBottomProperty(i);
-					if ((ball->getTag() - 2001 + 2) % 5 == color) {
+					if ((tag == 2001 && color == 2) ||
+						(tag == 2002 && color == 3) ||
+						(tag == 2003 && color == 1) ||
+						(tag == 2004 && color == 4) ||
+						(tag == 2005 && color == 0)) {
 						log("safe");
 					}
 					else {
@@ -193,7 +204,11 @@ void HelloWorld::update(float time) {
 			if (disInnerToObst > r / 2 - dangerDis - 30) {
 				if (ball->getPosition() > obst->getPosition()) {
 					auto color = obstacle->getTopProperty(i);
-					if ((ball->getTag() - 2001 + 2) % 5 == color) {
+					if ((tag == 2001 && color == 2) ||
+						(tag == 2002 && color == 3) ||
+						(tag == 2003 && color == 1) ||
+						(tag == 2004 && color == 4) ||
+						(tag == 2005 && color == 0)) {
 						log("safe");
 					}
 					else {
@@ -203,7 +218,11 @@ void HelloWorld::update(float time) {
 				}
 				else {
 					auto color = obstacle->getBottomProperty(i);
-					if ((ball->getTag() - 2001 + 2) % 5 == color) {
+					if ((tag == 2001 && color == 2) ||
+						(tag == 2002 && color == 3) ||
+						(tag == 2003 && color == 1) ||
+						(tag == 2004 && color == 4) ||
+						(tag == 2005 && color == 0)) {
 						log("safe");
 					}
 					else {
@@ -213,6 +232,7 @@ void HelloWorld::update(float time) {
 				}
 			}
 		}
+		// xq
 	}
 
 	// judge whether there is a collision with props
